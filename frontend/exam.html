@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ezitech - Secure AI Proctored Exam Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="js/api.js"></script>
+</head>
+<body class="bg-white text-gray-900 min-h-screen flex flex-col font-sans select-none" oncontextmenu="return false;">
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="bg-white border-b border-gray-200 px-6 py-3.5 flex items-center justify-between sticky top-0 z-50 shadow-sm">
+        <!-- Left Brand & Exam Title -->
+        <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-2.5">
+                <div class="w-8 h-8 bg-gradient-to-tr from-emerald-600 to-green-500 rounded-lg flex items-center justify-center text-white font-bold text-sm shadow-md shadow-emerald-600/30">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-sm text-gray-900 tracking-wide">Ezitech AI Proctor</h1>
+                    <span class="text-[10px] text-emerald-600 font-semibold tracking-wider">SECURE EXAM ENVIRONMENT</span>
+                </div>
+            </div>
+            <div class="h-6 w-px bg-gray-200 hidden sm:block"></div>
+            <div class="hidden sm:block">
+                <span class="text-xs text-gray-500 block">Assessment Module</span>
+                <span class="text-xs font-semibold text-gray-700">AI Engineering Final Exam v2.4</span>
+            </div>
+        </div>
+
+        <!-- Center Timer & Auto-Save Indicator -->
+        <div class="flex items-center space-x-6">
+            <div class="hidden md:flex items-center space-x-2 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-full">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" id="save-dot"></span>
+                <span class="text-[11px] text-gray-600 font-medium" id="autosave-text">All changes saved</span>
+            </div>
+
+            <div class="flex items-center space-x-2 bg-emerald-50 border border-emerald-200 px-4 py-1.5 rounded-xl text-emerald-700 font-mono font-bold text-sm shadow-inner">
+                <i class="fa-regular fa-clock"></i>
+                <span id="exam-timer">01:59:45</span>
+            </div>
+        </div>
+
+        <!-- Right Student Info & Accessibility -->
+        <div class="flex items-center space-x-3">
+            <div class="hidden lg:flex items-center bg-gray-100 rounded-lg p-0.5 border border-gray-200">
+                <button onclick="changeFontSize(-1)" class="px-2.5 py-1 text-xs text-gray-600 hover:text-gray-900 font-bold">A-</button>
+                <div class="w-px h-3 bg-gray-300"></div>
+                <button onclick="changeFontSize(1)" class="px-2.5 py-1 text-xs text-gray-600 hover:text-gray-900 font-bold">A+</button>
+            </div>
+
+            <div class="flex items-center space-x-2.5 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-xl">
+                <div class="w-7 h-7 bg-emerald-100 text-emerald-700 font-bold text-xs rounded-lg flex items-center justify-center border border-emerald-200" id="student-initials">ST</div>
+                <div class="text-left hidden sm:block">
+                    <div class="text-xs font-bold text-gray-900 leading-none" id="student-display-name">Student Name</div>
+                    <div class="text-[10px] text-gray-500 mt-0.5">ID: EZ-88429</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN EXAM BODY CONTAINER -->
+    <div class="flex-1 flex flex-col lg:flex-row w-full max-w-[1600px] mx-auto p-4 lg:p-6 gap-6">
+        
+        <!-- LEFT COLUMN: QUESTION PANEL (70%) -->
+        <div class="flex-1 flex flex-col space-y-4">
+            
+            <!-- Sections Navigation & Progress Bar -->
+            <div class="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm flex flex-col space-y-3">
+                <div class="flex items-center space-x-2 border-b border-gray-200 pb-3">
+                    <button onclick="switchSection('A')" id="sec-a-btn" class="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 text-white shadow-md transition flex items-center space-x-2">
+                        <span>Section A: Core MCQs</span>
+                        <span class="bg-emerald-800 text-emerald-100 px-1.5 py-0.5 rounded text-[10px]">5 Questions</span>
+                    </button>
+                    <button onclick="switchSection('B')" id="sec-b-btn" class="px-4 py-2 rounded-xl text-xs font-bold bg-gray-100 text-gray-600 hover:bg-gray-200 transition flex items-center space-x-2">
+                        <span>Section B: Architecture & Code</span>
+                        <span class="bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded text-[10px]">5 Practical Tasks</span>
+                    </button>
+                </div>
+
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+                    <div>
+                        <h2 class="text-xs font-bold text-gray-700 uppercase tracking-wide" id="section-title">Multiple Choice Questions (Core AI)</h2>
+                        <div class="text-xs text-gray-500 mt-0.5" id="section-desc">Passing Criteria: 70% • Negative Marking: -0.5</div>
+                    </div>
+                    <div class="w-full sm:w-48 space-y-1.5">
+                        <div class="flex justify-between text-[11px] font-semibold">
+                            <span class="text-gray-500">Total Progress</span>
+                            <span class="text-emerald-600" id="progress-text">0% Done</span>
+                        </div>
+                        <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden border border-gray-200">
+                            <div class="h-full bg-gradient-to-r from-emerald-600 to-green-500 rounded-full transition-all duration-300" id="progress-bar" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Question Box -->
+            <div class="bg-white border border-gray-200 rounded-2xl p-6 lg:p-8 shadow-md flex-1 flex flex-col justify-between space-y-6 relative">
+                
+                <!-- Question Header & Bookmark/Flag Button -->
+                <div class="flex items-center justify-between border-b border-gray-200 pb-4">
+                    <div class="flex items-center space-x-3">
+                        <span class="w-9 h-9 bg-emerald-50 border border-emerald-200 text-emerald-700 font-extrabold text-sm rounded-xl flex items-center justify-center" id="q-badge">Q.1</span>
+                        <div>
+                            <span class="text-xs font-semibold text-gray-500" id="q-counter-label">Question 1 of 5 (Section A)</span>
+                            <span class="block text-[11px] text-emerald-600 font-medium" id="q-marks">Marks: +2.5 / -0.5</span>
+                        </div>
+                    </div>
+                    <button onclick="toggleFlag()" id="flag-btn" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border border-gray-200 bg-gray-50 text-gray-600 hover:text-gray-900 text-xs font-semibold transition">
+                        <i class="fa-regular fa-flag text-gray-400" id="flag-icon"></i>
+                        <span id="flag-text">Flag for Review</span>
+                    </button>
+                </div>
+
+                <!-- Question Prompt Text -->
+                <div class="space-y-3">
+                    <h3 class="text-base lg:text-lg font-bold text-gray-900 leading-relaxed" id="question-title">
+                        Loading question...
+                    </h3>
+                    <p class="text-xs text-gray-500 italic" id="question-instruction">Select the most accurate option below:</p>
+                </div>
+
+                <!-- Dynamic Content Container -->
+                <div class="space-y-3" id="dynamic-content-container"></div>
+
+                <!-- Navigation Controls Footer -->
+                <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+                    <button onclick="prevQuestion()" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-xl font-bold text-xs transition flex items-center space-x-2">
+                        <i class="fa-solid fa-arrow-left text-[10px]"></i>
+                        <span>Previous Question</span>
+                    </button>
+                    <button onclick="nextQuestion()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs transition shadow-lg shadow-emerald-600/30 flex items-center space-x-2">
+                        <span>Save & Next</span>
+                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: PROCTORING & QUESTION PALETTE (30%) -->
+        <div class="w-full lg:w-80 flex flex-col space-y-4">
+            
+            <!-- AI Behavioral Monitoring Status Box -->
+            <div class="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm space-y-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+                        <h3 class="text-xs font-bold text-gray-900 uppercase tracking-wider">AI Monitoring Active</h3>
+                    </div>
+                    <span class="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded font-mono font-semibold">Secure</span>
+                </div>
+
+                <div class="bg-gray-50 border border-gray-200 rounded-xl p-3 space-y-2">
+                    <div class="flex items-center justify-between text-[11px] font-bold text-gray-500 border-b border-gray-200 pb-1.5">
+                        <span>AI Behavioral Log</span>
+                        <span class="text-emerald-600" id="violation-status"><i class="fa-solid fa-shield-halved mr-1"></i>Clean</span>
+                    </div>
+                    <div class="space-y-1.5 font-mono text-[10px] max-h-40 overflow-y-auto pr-1" id="log-console">
+                        <div class="text-gray-500 flex items-center justify-between">
+                            <span>[System] Session tracking started</span>
+                            <span class="text-emerald-600">OK</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question Navigation Grid Palette -->
+            <div class="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm space-y-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xs font-bold text-gray-900 uppercase tracking-wider">Question Palette</h3>
+                    <span class="text-[10px] text-gray-500">10 Total Tasks</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 text-[10px] text-gray-600 pt-1">
+                    <div class="flex items-center space-x-1.5">
+                        <span class="w-3 h-3 rounded bg-emerald-600 inline-block"></span>
+                        <span>Attempted (<span id="count-answered">0</span>)</span>
+                    </div>
+                    <div class="flex items-center space-x-1.5">
+                        <span class="w-3 h-3 rounded bg-amber-500 inline-block"></span>
+                        <span>Flagged (<span id="count-flagged">0</span>)</span>
+                    </div>
+                    <div class="flex items-center space-x-1.5">
+                        <span class="w-3 h-3 rounded bg-gray-100 border border-gray-300 inline-block"></span>
+                        <span>Not Visited</span>
+                    </div>
+                    <div class="flex items-center space-x-1.5">
+                        <span class="w-3 h-3 rounded bg-gray-300 inline-block"></span>
+                        <span>Current</span>
+                    </div>
+                </div>
+
+                <!-- Dynamic Grid Buttons -->
+                <div class="grid grid-cols-5 gap-2 pt-2" id="question-grid"></div>
+
+                <button onclick="openSubmitModal()" class="w-full mt-3 py-3 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/20 transition flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-paper-plane text-xs"></i>
+                    <span>Submit Final Assessment</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUBMISSION CONFIRMATION MODAL -->
+    <div id="submit-modal" class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white border border-gray-200 rounded-2xl p-6 w-full max-w-md space-y-4 shadow-2xl">
+            <div class="flex items-center space-x-3 text-amber-500">
+                <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
+                <h3 class="text-base font-bold text-gray-900">Confirm Final Submission</h3>
+            </div>
+            <p class="text-xs text-gray-600">You are about to submit your exam. Please verify your progress summary below:</p>
+            
+            <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-2 text-xs font-medium">
+                <div class="flex justify-between text-gray-600">
+                    <span>Total Attempted Tasks:</span>
+                    <span class="text-emerald-600 font-bold" id="modal-attempted">0 / 10</span>
+                </div>
+                <div class="flex justify-between text-gray-600">
+                    <span>Flagged for Review:</span>
+                    <span class="text-amber-500 font-bold" id="modal-flagged">0</span>
+                </div>
+                <div class="flex justify-between text-gray-600">
+                    <span>Proctoring Warnings Recorded:</span>
+                    <span class="text-rose-500 font-bold" id="modal-warnings">0</span>
+                </div>
+            </div>
+
+            <p class="text-[11px] text-gray-500 italic">Note: Once submitted, your answers will be permanently locked and encrypted for AI evaluation.</p>
+
+            <div class="flex space-x-3 pt-2">
+                <button onclick="closeSubmitModal()" class="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-xs rounded-xl transition">Resume Exam</button>
+                <button onclick="finalizeSubmission()" id="final-submit-btn" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition shadow-lg shadow-emerald-600/30">Yes, Submit Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROFESSIONAL SCRIPT LAYER WITH REAL BACKEND-CONNECTED PROCTORING -->
+    <script>
+        const examData = {
+            A: [
+                { type: 'mcq', q: "What is the primary role of an activation function in a deep neural network?", options: ["To speed up hardware compilation speeds", "To introduce non-linearity into network models", "To automatically reduce large dataset files", "To bypass backpropagation completely"], correct: 1 },
+                { type: 'mcq', q: "Which gradient descent variant computes gradients using the entire training dataset at once?", options: ["Stochastic Gradient Descent (SGD)", "Mini-batch Gradient Descent", "Batch Gradient Descent", "Adaptive Gradient Descent"], correct: 2 },
+                { type: 'mcq', q: "In Convolutional Neural Networks (CNNs), what is the mathematical purpose of a max-pooling layer?", options: ["Increase spatial dimensions for high resolution", "Reduce spatial dimensions and add spatial invariance", "Introduce non-linear activation directly to pixels", "Eliminate backpropagation requirements"], correct: 1 },
+                { type: 'mcq', q: "What key problem does the LSTM architecture solve compared to vanilla RNNs?", options: ["Overfitting on small tabular data", "Vanishing and exploding gradients over long sequences", "High hardware requirements for GPU rendering", "Slow compilation time in Python scripts"], correct: 1 },
+                { type: 'mcq', q: "Which optimization algorithm maintains adaptive learning rates for individual parameters using squared gradients?", options: ["Adam Optimizer", "Standard SGD", "Perceptron Learning Rule", "Linear Regression Fit"], correct: 0 }
+            ],
+            B: [
+                { type: 'code', q: "Write a PyTorch code snippet to define a custom sequential Convolutional layer block consisting of a Conv2d (3 input channels, 16 output channels, kernel size 3) followed by a ReLU activation.", placeholder: "# Write your PyTorch code here...\nimport torch.nn as nn\n\nclass ConvBlock(nn.Module):\n    def __init__(self):\n        super().__init__()\n    \n    def forward(self, x):\n        return x" },
+                { type: 'code', q: "Explain the architectural difference between Encoder-Decoder models and Transformer Self-Attention mechanisms in 3-4 sentences.", placeholder: "# Type your concise architectural explanation here..." },
+                { type: 'code', q: "Write a FastAPI endpoint decorator and asynchronous function signature to accept a POST request with JSON payload for model inference.", placeholder: "# Write your FastAPI code snippet here...\nfrom fastapi import FastAPI\n\napp = FastAPI()" },
+                { type: 'code', q: "How do you handle class imbalance in a classification dataset using Scikit-Learn or PyTorch loss functions?", placeholder: "# Provide your technical strategy or code implementation..." },
+                { type: 'code', q: "Describe the purpose of Docker containerization when deploying enterprise-grade Machine Learning APIs with custom CUDA drivers.", placeholder: "# Write your professional explanation here..." }
+            ]
+        };
+
+        // ---- Session identity (from URL) ----
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session_id');
+
+        let currentSection = 'A';
+        let currentIndex = 0;
+        let userResponses = {};
+        let flaggedQuestions = {};
+        let warningCount = 0;
+
+        window.onload = function() {
+            if (!sessionId) {
+                alert("No active session found. Redirecting to login.");
+                window.location.href = "index.html";
+                return;
+            }
+
+            const storedName = localStorage.getItem("studentName");
+            if (storedName) {
+                document.getElementById('student-display-name').innerText = storedName;
+                const initials = storedName.split(' ').map(n => n[0]).join('').toUpperCase();
+                document.getElementById('student-initials').innerText = initials;
+            }
+
+            loadQuestion();
+            buildPalette();
+            startTimer();
+            initSecurityProctoring();
+            logEvent(sessionId, "assessment_start", null);
+        };
+
+        // --- REAL PROCTORING: every signal is sent to the backend, no fake alerts ---
+        function initSecurityProctoring() {
+            document.addEventListener("visibilitychange", function() {
+                if (document.hidden) {
+                    warningCount++;
+                    logViolation("Tab switch or minimize detected");
+                    logEvent(sessionId, "tab_switch", null);
+                }
+            });
+
+            document.addEventListener("copy", (e) => {
+                e.preventDefault();
+                warningCount++;
+                const copiedText = window.getSelection().toString();
+                logViolation("Copy attempt blocked");
+                logEvent(sessionId, "copy", { char_count: copiedText.length });
+            });
+
+            document.addEventListener("paste", (e) => {
+                e.preventDefault();
+                warningCount++;
+                const pastedText = (e.clipboardData || window.clipboardData).getData("text");
+                logViolation("Paste attempt blocked");
+                logEvent(sessionId, "paste", { char_count: pastedText.length });
+            });
+
+            // Mouse movement — throttled to 1 event per 3s so we don't flood the backend
+            let lastMouseLog = 0;
+            document.addEventListener("mousemove", () => {
+                const now = Date.now();
+                if (now - lastMouseLog > 3000) {
+                    lastMouseLog = now;
+                    logEvent(sessionId, "mousemove", null);
+                }
+            });
+
+            // Keystrokes — throttled to 1 event per 500ms
+            let lastKeyLog = 0;
+            document.addEventListener("keydown", () => {
+                const now = Date.now();
+                if (now - lastKeyLog > 500) {
+                    lastKeyLog = now;
+                    logEvent(sessionId, "keydown", null);
+                }
+            });
+        }
+
+        function logViolation(message) {
+            const consoleBox = document.getElementById('log-console');
+            const timeStr = new Date().toTimeString().split(' ')[0];
+            
+            const logItem = document.createElement('div');
+            logItem.className = "text-rose-500 flex items-center justify-between";
+            logItem.innerHTML = `<span>[${timeStr}] ${message}</span><span class="text-rose-600 font-bold">WARN #${warningCount}</span>`;
+            consoleBox.prepend(logItem);
+
+            document.getElementById('violation-status').innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i>${warningCount} Warnings`;
+        }
+
+        function switchSection(sec) {
+            currentSection = sec;
+            currentIndex = 0;
+            const btnA = document.getElementById('sec-a-btn');
+            const btnB = document.getElementById('sec-b-btn');
+            const title = document.getElementById('section-title');
+            const desc = document.getElementById('section-desc');
+
+            if(sec === 'A') {
+                btnA.className = "px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 text-white shadow-md transition flex items-center space-x-2";
+                btnB.className = "px-4 py-2 rounded-xl text-xs font-bold bg-gray-100 text-gray-600 hover:bg-gray-200 transition flex items-center space-x-2";
+                title.innerText = "Multiple Choice Questions (Core AI)";
+                desc.innerText = "Passing Criteria: 70% • Negative Marking: -0.5";
+            } else {
+                btnB.className = "px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 text-white shadow-md transition flex items-center space-x-2";
+                btnA.className = "px-4 py-2 rounded-xl text-xs font-bold bg-gray-100 text-gray-600 hover:bg-gray-200 transition flex items-center space-x-2";
+                title.innerText = "Architecture & Code Evaluation";
+                desc.innerText = "Practical Component • Theory & Coding Tasks";
+            }
+            loadQuestion();
+            buildPalette();
+        }
+
+        function loadQuestion() {
+            const qList = examData[currentSection];
+            const qData = qList[currentIndex];
+            const globalQNum = currentSection === 'A' ? (currentIndex + 1) : (currentIndex + 6);
+
+            document.getElementById('q-badge').innerText = `Q.${globalQNum}`;
+            document.getElementById('q-counter-label').innerText = `Question ${currentIndex + 1} of 5 (${currentSection === 'A' ? 'MCQs' : 'Theory & Code'})`;
+            document.getElementById('q-marks').innerText = currentSection === 'A' ? "Marks: +2.5 / -0.5" : "Marks: +5.0 (Manual Review)";
+            document.getElementById('question-title').innerText = qData.q;
+
+            const container = document.getElementById('dynamic-content-container');
+            container.innerHTML = '';
+
+            const key = `${currentSection}-${currentIndex}`;
+            const savedValue = userResponses[key];
+
+            if (qData.type === 'mcq') {
+                document.getElementById('question-instruction').innerText = "Select the most accurate architectural option below:";
+                qData.options.forEach((optText, idx) => {
+                    const isChecked = savedValue === idx ? 'checked' : '';
+                    const borderClass = isChecked ? 'border-emerald-400 bg-emerald-50 shadow-sm' : 'border-gray-200 bg-gray-50 hover:bg-gray-100 hover:border-emerald-300';
+                    
+                    const label = document.createElement('label');
+                    label.className = `flex items-start space-x-3.5 p-4 rounded-xl border ${borderClass} cursor-pointer transition group`;
+                    label.innerHTML = `
+                        <input type="radio" name="exam_option" value="${idx}" ${isChecked} onchange="saveMCQ(${idx})" class="mt-1 accent-emerald-600 w-4 h-4">
+                        <span class="text-sm font-medium text-gray-700 group-hover:text-gray-900">${optText}</span>
+                    `;
+                    container.appendChild(label);
+                });
+            } else {
+                document.getElementById('question-instruction').innerText = "Provide your technical solution or structural explanation below:";
+                const textarea = document.createElement('textarea');
+                textarea.className = "w-full h-48 bg-gray-50 border border-gray-200 rounded-xl p-4 text-xs font-mono text-emerald-700 focus:outline-none focus:border-emerald-500 transition leading-relaxed";
+                textarea.placeholder = qData.placeholder;
+                textarea.value = savedValue !== undefined ? savedValue : "";
+                textarea.oninput = (e) => saveCodeOrTheory(e.target.value);
+                container.appendChild(textarea);
+            }
+
+            updateFlagUI();
+            buildPalette();
+        }
+
+        // ---- Answers are saved locally AND pushed to the backend session ----
+        function persistAnswers() {
+            updateSession(sessionId, { answer_text: JSON.stringify(userResponses) });
+        }
+
+        function saveMCQ(idx) {
+            userResponses[`${currentSection}-${currentIndex}`] = idx;
+            triggerAutoSave();
+            buildPalette();
+            persistAnswers();
+        }
+
+        function saveCodeOrTheory(val) {
+            userResponses[`${currentSection}-${currentIndex}`] = val.trim();
+            triggerAutoSave();
+            buildPalette();
+            persistAnswers();
+        }
+
+        function triggerAutoSave() {
+            const saveText = document.getElementById('autosave-text');
+            const saveDot = document.getElementById('save-dot');
+            saveText.innerText = "Saving changes...";
+            saveDot.className = "w-2 h-2 rounded-full bg-amber-500 animate-ping";
+            
+            setTimeout(() => {
+                saveText.innerText = "All changes saved";
+                saveDot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
+            }, 500);
+        }
+
+        function nextQuestion() {
+            if (currentIndex < examData[currentSection].length - 1) {
+                currentIndex++;
+                loadQuestion();
+            } else if (currentSection === 'A') {
+                switchSection('B');
+            }
+        }
+
+        function prevQuestion() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                loadQuestion();
+            } else if (currentSection === 'B') {
+                switchSection('A');
+                currentIndex = 4;
+                loadQuestion();
+            }
+        }
+
+        function goToQuestion(sec, idx) {
+            if (currentSection !== sec) switchSection(sec);
+            currentIndex = idx;
+            loadQuestion();
+        }
+
+        function toggleFlag() {
+            const key = `${currentSection}-${currentIndex}`;
+            flaggedQuestions[key] = !flaggedQuestions[key];
+            updateFlagUI();
+            buildPalette();
+        }
+
+        function updateFlagUI() {
+            const key = `${currentSection}-${currentIndex}`;
+            const btn = document.getElementById('flag-btn');
+            const icon = document.getElementById('flag-icon');
+            const text = document.getElementById('flag-text');
+
+            if (flaggedQuestions[key]) {
+                btn.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border border-amber-300 bg-amber-50 text-amber-600 text-xs font-semibold transition";
+                icon.className = "fa-solid fa-flag text-amber-500";
+                text.innerText = "Flagged for Review";
+            } else {
+                btn.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border border-gray-200 bg-gray-50 text-gray-600 hover:text-gray-900 text-xs font-semibold transition";
+                icon.className = "fa-regular fa-flag text-gray-400";
+                text.innerText = "Flag for Review";
+            }
+        }
+
+        function buildPalette() {
+            const grid = document.getElementById('question-grid');
+            grid.innerHTML = '';
+            
+            let attemptedCount = 0;
+            let flaggedCount = 0;
+
+            ['A', 'B'].forEach(sec => {
+                examData[sec].forEach((q, idx) => {
+                    const globalNum = sec === 'A' ? idx + 1 : idx + 6;
+                    const key = `${sec}-${idx}`;
+                    const val = userResponses[key];
+                    const isAttempted = val !== undefined && val !== "";
+                    const isFlagged = flaggedQuestions[key];
+                    const isCurrent = (currentSection === sec && currentIndex === idx);
+
+                    if (isAttempted) attemptedCount++;
+                    if (isFlagged) flaggedCount++;
+
+                    let btnClass = "py-2 font-bold text-xs rounded-lg shadow-sm transition ";
+                    if (isCurrent) {
+                        btnClass += "bg-gray-300 text-gray-900 ring-2 ring-emerald-400";
+                    } else if (isFlagged) {
+                        btnClass += "bg-amber-500 text-white";
+                    } else if (isAttempted) {
+                        btnClass += "bg-emerald-600 text-white";
+                    } else {
+                        btnClass += "bg-gray-100 text-gray-600 hover:bg-gray-200";
+                    }
+
+                    const btn = document.createElement('button');
+                    btn.className = btnClass;
+                    btn.innerText = globalNum;
+                    btn.onclick = () => goToQuestion(sec, idx);
+                    grid.appendChild(btn);
+                });
+            });
+
+            document.getElementById('count-answered').innerText = attemptedCount;
+            document.getElementById('count-flagged').innerText = flaggedCount;
+            
+            const percent = Math.round((attemptedCount / 10) * 100);
+            document.getElementById('progress-text').innerText = `${percent}% Done`;
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+        }
+
+        function startTimer() {
+            let totalSeconds = 2 * 3600 - 75;
+            setInterval(() => {
+                if (totalSeconds > 0) totalSeconds--;
+                let hrs = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+                let mins = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+                let secs = (totalSeconds % 60).toString().padStart(2, '0');
+                document.getElementById('exam-timer').innerText = `${hrs}:${mins}:${secs}`;
+            }, 1000);
+        }
+
+        function openSubmitModal() {
+            const totalAttempted = Object.values(userResponses).filter(v => v !== undefined && v !== "").length;
+            const totalFlagged = Object.values(flaggedQuestions).filter(v => v === true).length;
+
+            document.getElementById('modal-attempted').innerText = `${totalAttempted} / 10`;
+            document.getElementById('modal-flagged').innerText = totalFlagged;
+            document.getElementById('modal-warnings').innerText = warningCount;
+
+            document.getElementById('submit-modal').classList.remove('hidden');
+        }
+
+        function closeSubmitModal() {
+            document.getElementById('submit-modal').classList.add('hidden');
+        }
+
+        // ---- Final submission: logs the submit event, marks session submitted, then calculates the risk score ----
+        async function finalizeSubmission() {
+            const btn = document.getElementById('final-submit-btn');
+            btn.disabled = true;
+            btn.innerText = "Submitting...";
+
+            try {
+                await logEvent(sessionId, "submit", null);
+                await updateSession(sessionId, {
+                    answer_text: JSON.stringify(userResponses),
+                    status: "submitted"
+                });
+                await calculateScore(sessionId);
+
+                alert("Assessment submitted successfully! Your integrity report has been generated.");
+                window.location.href = "index.html";
+            } catch (err) {
+                console.error("Submission failed:", err);
+                alert("Something went wrong while submitting. Please check your connection and try again.");
+                btn.disabled = false;
+                btn.innerText = "Yes, Submit Now";
+            }
+        }
+    </script>
+</body>
+</html>

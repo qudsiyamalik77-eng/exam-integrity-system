@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Exam Integrity - Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex">
+
+    <!-- Sidebar Navigation -->
+    <aside class="w-64 bg-white border-r border-slate-200 flex flex-col justify-between hidden md:flex shadow-sm">
+        <div>
+            <div class="p-6 border-b border-slate-100 flex items-center space-x-3">
+                <i class="fa-solid fa-shield-halved text-emerald-600 text-2xl"></i>
+                <span class="font-bold text-lg tracking-wide text-slate-900">ExamIntegrity</span>
+            </div>
+            <nav class="p-4 space-y-2">
+                <a href="dashboard.html" class="flex items-center space-x-3 px-4 py-3 bg-emerald-600 text-white rounded-xl font-medium transition shadow-md shadow-emerald-600/20">
+                    <i class="fa-solid fa-chart-pie w-5"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="live-sessions.html" class="flex items-center space-x-3 px-4 py-3 text-slate-600 hover:bg-slate-100 hover:text-slate-900 rounded-xl font-medium transition">
+                    <i class="fa-solid fa-video w-5"></i>
+                    <span>Live Sessions</span>
+                </a>
+                <a href="reports.html" class="flex items-center space-x-3 px-4 py-3 text-slate-600 hover:bg-slate-100 hover:text-slate-900 rounded-xl font-medium transition">
+                    <i class="fa-solid fa-triangle-exclamation w-5"></i>
+                    <span>Flagged Reports</span>
+                </a>
+            </nav>
+        </div>
+        <div class="p-4 border-t border-slate-100">
+            <div class="flex items-center space-x-3 px-4 py-2 text-slate-500 text-sm">
+                <i class="fa-solid fa-circle text-emerald-500 text-xs"></i>
+                <span>System Online</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col min-h-screen overflow-y-auto">
+        <!-- Top Header -->
+        <header class="bg-white border-b border-slate-200 px-8 py-4 flex justify-between items-center shadow-xs">
+            <div class="flex items-center space-x-4">
+                <h1 class="text-xl font-bold tracking-tight text-slate-900">AI Proctoring Dashboard</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span class="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-full font-medium">
+                    <i class="fa-solid fa-bolt mr-1"></i> Real-time Monitoring Active
+                </span>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <div class="p-8 space-y-8 max-w-7xl w-full mx-auto">
+            
+            <!-- Stats Grid Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Card 1 -->
+                <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-xs hover:shadow-md transition">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Assessments</p>
+                            <h3 id="stat-total" class="text-3xl font-bold mt-2 text-slate-900">0</h3>
+                        </div>
+                        <div class="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
+                            <i class="fa-solid fa-users text-lg"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-xs hover:shadow-md transition">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Flagged Sessions</p>
+                            <h3 id="stat-flagged" class="text-3xl font-bold mt-2 text-rose-600">0</h3>
+                        </div>
+                        <div class="p-3 bg-rose-50 text-rose-600 rounded-xl">
+                            <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-xs hover:shadow-md transition">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Avg Integrity Score</p>
+                            <h3 id="stat-integrity" class="text-3xl font-bold mt-2 text-emerald-600">0%</h3>
+                        </div>
+                        <div class="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
+                            <i class="fa-solid fa-shield-check text-lg"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-xs hover:shadow-md transition">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">AI Confidence Rate</p>
+                            <h3 id="stat-confidence" class="text-3xl font-bold mt-2 text-emerald-700">0%</h3>
+                        </div>
+                        <div class="p-3 bg-emerald-50 text-emerald-700 rounded-xl">
+                            <i class="fa-solid fa-brain text-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts & Analytics Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 bg-white border border-slate-200 p-6 rounded-2xl shadow-xs">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="font-bold text-base text-slate-900">Behavioral Violation Vectors</h2>
+                        <span class="text-xs text-slate-500">Live Analytics</span>
+                    </div>
+                    <div class="h-72 relative">
+                        <canvas id="violationChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-xs flex flex-col justify-between">
+                    <div>
+                        <h2 class="font-bold text-base text-slate-900 mb-4">System Status</h2>
+                        <div class="space-y-4 text-sm text-slate-600">
+                            <div class="flex justify-between items-center py-2 border-b border-slate-100">
+                                <span>Behavioral Analytics Engine</span>
+                                <span class="text-emerald-600 font-medium">Operational</span>
+                            </div>
+                            <div class="flex justify-between items-center py-2 border-b border-slate-100">
+                                <span>Tab Switch Detector</span>
+                                <span class="text-emerald-600 font-medium">Active</span>
+                            </div>
+                            <div class="flex justify-between items-center py-2 border-b border-slate-100">
+                                <span>Risk Scoring Engine</span>
+                                <span class="text-emerald-600 font-medium">Monitoring</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-6 p-4 bg-emerald-50/50 rounded-xl border border-emerald-100 text-xs text-slate-600">
+                        <i class="fa-solid fa-circle-info text-emerald-600 mr-1"></i> AI models are running in local endpoint mode with secure session state.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flagged Reports Table Section -->
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
+                <div class="p-6 border-b border-slate-200 flex justify-between items-center">
+                    <h2 class="font-bold text-base text-slate-900">Recent Flagged Reports</h2>
+                    <a href="reports.html" class="text-xs text-emerald-600 hover:underline font-medium">View All</a>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-200 text-xs text-slate-500 uppercase tracking-wider bg-slate-50">
+                                <th class="py-3 px-6 font-semibold">Session</th>
+                                <th class="py-3 px-6 font-semibold">Candidate Name</th>
+                                <th class="py-3 px-6 font-semibold">Integrity Score</th>
+                                <th class="py-3 px-6 font-semibold">Suspicion Index</th>
+                                <th class="py-3 px-6 font-semibold">Primary Flag Reason</th>
+                                <th class="py-3 px-6 font-semibold text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="flagged-reports-tbody" class="divide-y divide-slate-100 text-sm text-slate-700">
+                            <tr>
+                                <td colspan="6" class="py-6 text-center text-slate-400">Loading live reports...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Script to Fetch Data & Render Chart -->
+    <script src="js/api.js"></script>
+    <script>
+        let myChart = null;
+        const FLAGGED_THRESHOLD = 50; // must match backend's FLAGGED_THRESHOLD in dashboard.py
+
+        function renderChart(vectorCounts) {
+            const ctx = document.getElementById('violationChart').getContext('2d');
+            if (myChart) myChart.destroy();
+
+            myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Tab Switching', 'Copy/Paste', 'Mouse Activity', 'Typing Pattern', 'Submission Speed', 'Multi-Device/VPN'],
+                    datasets: [{
+                        label: 'Sessions Triggering Signal',
+                        data: vectorCounts,
+                        backgroundColor: '#16a34a', // Professional Green
+                        borderRadius: 8,
+                        barThickness: 24
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 11 } } },
+                        y: { grid: { color: '#f1f5f9' }, ticks: { color: '#64748b', font: { size: 11 } } }
+                    }
+                }
+            });
+        }
+
+        // Picks the highest-scoring triggered signal from a session's signals_json
+        // (fetched via the timeline endpoint) to show as the "Primary Flag Reason".
+        function pickPrimaryReason(signals) {
+            if (!signals || signals.length === 0) return "No signals recorded";
+            const sorted = [...signals].sort((a, b) => (b.score || 0) - (a.score || 0));
+            const top = sorted[0];
+            return top && top.score > 0 ? top.name.replace(/_/g, " ") : "No significant signal";
+        }
+
+        async function fetchDashboardData() {
+            try {
+                // All sessions -> used to compute the summary stat cards
+                const allSessions = (await apiRequest("/dashboard/sessions")) || [];
+
+                const total = allSessions.length;
+                const scored = allSessions.filter(s => s.suspicion_score !== null && s.suspicion_score !== undefined);
+                const flaggedCount = scored.filter(s => s.suspicion_score >= FLAGGED_THRESHOLD).length;
+                const avgIntegrity = scored.length
+                    ? Math.round(scored.reduce((sum, s) => sum + (s.integrity_score || 0), 0) / scored.length)
+                    : 0;
+                const avgConfidence = scored.length
+                    ? Math.round(scored.reduce((sum, s) => sum + (s.confidence_score || 0), 0) / scored.length)
+                    : 0;
+
+                document.getElementById("stat-total").innerText = total;
+                document.getElementById("stat-flagged").innerText = flaggedCount;
+                document.getElementById("stat-integrity").innerText = avgIntegrity + "%";
+                document.getElementById("stat-confidence").innerText = avgConfidence + "%";
+
+                // Flagged reports fetch
+                const reportsRes = (await apiRequest("/dashboard/flagged")) || [];
+                const tbody = document.getElementById("flagged-reports-tbody");
+
+                if (reportsRes.length > 0) {
+                    tbody.innerHTML = reportsRes.map(r => `
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="py-3 px-6 font-mono text-xs text-slate-500">SES-${r.session_id}</td>
+                            <td class="py-3 px-6 font-semibold text-slate-900">${r.candidate_name || 'Unknown Candidate'}</td>
+                            <td class="py-3 px-6 text-emerald-600 font-bold">${r.integrity_score ?? '--'}%</td>
+                            <td class="py-3 px-6 font-semibold text-rose-600">${r.suspicion_score ?? '--'}/100</td>
+                            <td class="py-3 px-6 text-slate-600 text-xs" id="reason-${r.session_id}">Loading...</td>
+                            <td class="py-3 px-6 text-right">
+                                <a href="session-detail.html?session_id=${r.session_id}" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-medium transition shadow-xs">Review</a>
+                            </td>
+                        </tr>
+                    `).join('');
+
+                    // Fetch each flagged session's timeline once, use it for both
+                    // the "Primary Flag Reason" cell and the chart's vector counts.
+                    const vectorLabels = ["tab_switching", "copy_paste", "mouse_activity", "typing_pattern", "submission_speed", "multi_device_vpn"];
+                    const vectorCounts = [0, 0, 0, 0, 0, 0];
+
+                    await Promise.all(reportsRes.map(async (r) => {
+                        const timeline = await apiRequest(`/dashboard/${r.session_id}/timeline`);
+                        const signals = timeline && timeline.score && timeline.score.signals_json;
+
+                        const cell = document.getElementById(`reason-${r.session_id}`);
+                        if (cell) cell.innerText = pickPrimaryReason(signals);
+
+                        if (signals) {
+                            signals.forEach(sig => {
+                                const idx = vectorLabels.indexOf(sig.name);
+                                if (idx !== -1 && sig.score > 0) vectorCounts[idx]++;
+                            });
+                        }
+                    }));
+
+                    renderChart(vectorCounts);
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-slate-400">No flagged reports recorded.</td></tr>`;
+                    renderChart([0, 0, 0, 0, 0, 0]);
+                }
+            } catch (err) {
+                console.error("Dashboard Load Error:", err);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', fetchDashboardData);
+    </script>
+</body>
+</html>

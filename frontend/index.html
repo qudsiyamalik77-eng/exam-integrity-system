@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ezitech - AI Exam Integrity & Cheating Detection System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="js/api.js"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between font-sans">
+
+    <!-- Main Container Layout (Split Screen) -->
+    <div class="flex flex-col lg:flex-row flex-1 w-full">
+        
+        <!-- LEFT HERO SECTION -->
+        <div class="lg:w-7/12 bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-950 p-12 lg:p-16 flex flex-col justify-between relative overflow-hidden border-r border-slate-800">
+            <div class="absolute -top-32 -left-32 w-96 h-96 bg-emerald-600/15 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-green-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <!-- Top Brand Logo -->
+            <div class="flex items-center space-x-3 z-10">
+                <div class="w-10 h-10 bg-gradient-to-tr from-emerald-600 to-green-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-600/30 text-white font-bold text-xl">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div>
+                    <h2 class="font-bold text-lg tracking-wide leading-none text-white">Ezitech</h2>
+                    <span class="text-[11px] text-emerald-400 font-semibold tracking-wider uppercase">Engineering Framework</span>
+                </div>
+            </div>
+
+            <!-- Center Content -->
+            <div class="my-auto py-12 z-10 space-y-6 max-w-xl">
+                <div class="space-y-3">
+                    <span class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs rounded-full font-semibold inline-block">
+                        <i class="fa-solid fa-microchip mr-1.5"></i> Enterprise AI Engine v2.4
+                    </span>
+                    <h1 class="text-3xl lg:text-4xl font-extrabold tracking-tight leading-snug text-white">
+                        AI Exam Integrity & <br>
+                        <span class="bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent">Cheating Detection System</span>
+                    </h1>
+                    <p class="text-slate-300 text-sm leading-relaxed">
+                        AI-powered real-time monitoring, behavioral analysis, and automated proctoring to ensure completely fair and transparent student assessments.
+                    </p>
+                </div>
+
+                <!-- Floating Feature Badges Grid -->
+                <div class="grid grid-cols-2 gap-3 pt-2">
+                    <div class="bg-slate-900/90 border border-slate-800/80 backdrop-blur-md p-3.5 rounded-xl flex items-center space-x-3">
+                        <div class="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg text-xs"><i class="fa-solid fa-user-shield"></i></div>
+                        <span class="text-xs font-semibold text-slate-200">Tab & Focus Switching</span>
+                    </div>
+                    <div class="bg-slate-900/90 border border-slate-800/80 backdrop-blur-md p-3.5 rounded-xl flex items-center space-x-3">
+                        <div class="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg text-xs"><i class="fa-solid fa-brain"></i></div>
+                        <span class="text-xs font-semibold text-slate-200">Behavioral Pattern AI</span>
+                    </div>
+                    <div class="bg-slate-900/90 border border-slate-800/80 backdrop-blur-md p-3.5 rounded-xl flex items-center space-x-3">
+                        <div class="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg text-xs"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <span class="text-xs font-semibold text-slate-200">Real-time Alert Stream</span>
+                    </div>
+                    <div class="bg-slate-900/90 border border-slate-800/80 backdrop-blur-md p-3.5 rounded-xl flex items-center space-x-3">
+                        <div class="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg text-xs"><i class="fa-solid fa-chart-pie"></i></div>
+                        <span class="text-xs font-semibold text-slate-200">Live Integrity Score</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Footer Icons -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 border-t border-slate-800/80 z-10">
+                <div class="space-y-1">
+                    <div class="text-emerald-400 text-sm"><i class="fa-solid fa-shield-virus"></i></div>
+                    <p class="text-xs font-bold text-slate-200">AI Risk Engine</p>
+                </div>
+                <div class="space-y-1">
+                    <div class="text-emerald-400 text-sm"><i class="fa-solid fa-eye"></i></div>
+                    <p class="text-xs font-bold text-slate-200">Real-time Monitoring</p>
+                </div>
+                <div class="space-y-1">
+                    <div class="text-emerald-400 text-sm"><i class="fa-solid fa-file-lines"></i></div>
+                    <p class="text-xs font-bold text-slate-200">Integrity Reports</p>
+                </div>
+                <div class="space-y-1">
+                    <div class="text-emerald-400 text-sm"><i class="fa-solid fa-user-gear"></i></div>
+                    <p class="text-xs font-bold text-slate-200">Human Oversight</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT LOGIN FORM SECTION WITH ROLE SWITCHER -->
+        <div class="lg:w-5/12 bg-white text-slate-900 p-8 lg:p-16 flex flex-col justify-center items-center shadow-2xl">
+            <div class="w-full max-w-md space-y-6">
+                
+                <!-- Form Header -->
+                <div class="text-center space-y-2">
+                    <div class="inline-flex p-3.5 bg-emerald-50 text-emerald-600 rounded-2xl text-2xl mb-1 shadow-sm border border-emerald-100">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <h2 class="text-2xl font-extrabold tracking-tight text-slate-900">Welcome Back!</h2>
+                    <p class="text-xs text-slate-500 font-medium">Select your role to sign in</p>
+                </div>
+
+                <!-- Role Selector Toggle Tabs -->
+                <div class="flex bg-slate-100 p-1.5 rounded-xl border border-slate-200">
+                    <button type="button" onclick="setRole('mentor')" id="tab-mentor" class="flex-1 py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white shadow-sm transition">Mentor Portal</button>
+                    <button type="button" onclick="setRole('student')" id="tab-student" class="flex-1 py-2 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition">Student Exam</button>
+                </div>
+
+                <!-- Login Form -->
+                <form onsubmit="handleLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5" id="label-email">Mentor Email Address</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 text-sm">
+                                <i class="fa-regular fa-envelope"></i>
+                            </span>
+                            <input type="email" id="user-email" placeholder="mentor@ezitech.org" class="w-full pl-10 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:border-emerald-600 focus:bg-white transition shadow-sm" required>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">Password</label>
+                            <a href="#" class="text-xs font-semibold text-emerald-600 hover:underline">Forgot Password?</a>
+                        </div>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 text-sm">
+                                <i class="fa-solid fa-lock"></i>
+                            </span>
+                            <input type="password" id="user-password" placeholder="••••••••" class="w-full pl-10 pr-10 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:border-emerald-600 focus:bg-white transition shadow-sm" required>
+                            <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 text-sm">
+                                <i class="fa-regular fa-eye" id="eye-icon"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="submit-btn" class="w-full py-4 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white rounded-xl font-bold text-sm transition shadow-lg shadow-emerald-600/25 flex items-center justify-center space-x-2">
+                        <span>Access Mentor Dashboard</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
+                    <p id="login-error" class="text-xs text-rose-500 text-center hidden"></p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Legal Bar -->
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+        <p class="text-[11px] text-slate-400">Ezitech Engineering Framework • Academic & Enterprise Proctoring System</p>
+    </footer>
+
+    <!-- Script Layer -->
+    <script>
+        let selectedRole = 'mentor';
+
+        function setRole(role) {
+            selectedRole = role;
+            const tabMentor = document.getElementById('tab-mentor');
+            const tabStudent = document.getElementById('tab-student');
+            const labelEmail = document.getElementById('label-email');
+            const submitBtn = document.getElementById('submit-btn');
+            const emailInput = document.getElementById('user-email');
+
+            if (role === 'mentor') {
+                tabMentor.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white shadow-sm transition";
+                tabStudent.className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition";
+                labelEmail.innerText = "Mentor Email Address";
+                emailInput.placeholder = "mentor@ezitech.org";
+                submitBtn.innerHTML = `<span>Access Mentor Dashboard</span> <i class="fa-solid fa-arrow-right text-xs"></i>`;
+            } else {
+                tabStudent.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white shadow-sm transition";
+                tabMentor.className = "flex-1 py-2 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition";
+                labelEmail.innerText = "Student Roll No / Email";
+                emailInput.placeholder = "student@ezitech.org";
+                submitBtn.innerHTML = `<span>Start Secure Assessment</span> <i class="fa-solid fa-arrow-right text-xs"></i>`;
+            }
+        }
+
+        function togglePassword() {
+            const passwordInput = document.getElementById('user-password');
+            const eyeIcon = document.getElementById('eye-icon');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.className = "fa-regular fa-eye-slash";
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.className = "fa-regular fa-eye";
+            }
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('user-email').value;
+            let name = email.split('@')[0];
+            name = name.charAt(0).toUpperCase() + name.slice(1);
+
+            const submitBtn = document.getElementById('submit-btn');
+            const errorBox = document.getElementById('login-error');
+            const originalText = submitBtn.innerHTML;
+            errorBox.classList.add('hidden');
+
+            if (selectedRole === 'mentor') {
+                localStorage.setItem("mentorName", name);
+                localStorage.setItem("mentorEmail", email);
+                window.location.href = "dashboard.html";
+            } else {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `<span>Starting Exam...</span>`;
+
+                try {
+                    const candidate = await createCandidate(name, email);
+                    const session = await createSession(candidate.id, "AI Engineering Final Exam", 10);
+
+                    localStorage.setItem("studentName", name);
+                    localStorage.setItem("studentEmail", email);
+
+                    window.location.href = `exam.html?session_id=${session.id}`;
+
+                } catch (err) {
+                    console.error(err);
+                    errorBox.innerText = "Could not start exam. Please check if the backend server is running.";
+                    errorBox.classList.remove('hidden');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
+            }
+        }
+    </script>
+</body>
+</html>
