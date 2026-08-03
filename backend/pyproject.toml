@@ -15,6 +15,7 @@ dependencies = [
     "email-validator",
     "python-jose",
     "passlib",
+    "reportlab",
 ]
 
 [build-system]
