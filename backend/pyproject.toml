@@ -4,7 +4,7 @@ version = "1.0.0"
 description = "AI Exam Integrity & Cheating Detection System backend"
 requires-python = ">=3.11"
 dependencies = [
-    "fastapi",
+    "fastapi[standard]",
     "uvicorn[standard]",
     "sqlalchemy",
     "python-dotenv",
