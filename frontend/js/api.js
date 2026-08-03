@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:8000/api";
+const API_BASE_URL = "https://exam-integrity-system.fastapicloud.dev/api";
 
 async function apiRequest(endpoint, method = "GET", data = null) {
     const options = {
