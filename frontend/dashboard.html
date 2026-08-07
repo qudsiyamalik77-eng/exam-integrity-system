@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ezitech Mentor Dashboard | AI Exam Integrity System</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js for Live Analytics & Charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="js/api.js"></script>
 </head>
@@ -14,9 +12,7 @@
 
     <!-- Sidebar Navigation -->
     <aside class="w-64 bg-emerald-950 border-r border-emerald-900 flex flex-col justify-between fixed inset-y-0 left-0 z-50 text-white">
-        <!-- Scrollable Sidebar Content Area -->
         <div class="flex-1 overflow-y-auto px-4 py-6 space-y-6 custom-scrollbar">
-            <!-- Brand Header -->
             <div class="flex items-center space-x-3 pb-4 border-b border-emerald-900">
                 <div class="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center text-white font-bold text-base shadow-sm">E</div>
                 <div>
@@ -25,52 +21,50 @@
                 </div>
             </div>
 
-            <!-- Navigation Links -->
             <div class="space-y-4">
                 <div>
                     <p class="px-3 text-[10px] font-semibold tracking-wider text-emerald-400 uppercase mb-2">Main</p>
                     <nav class="space-y-1">
-                        <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg bg-emerald-600 text-white text-sm font-medium shadow-sm transition">
+                        <button onclick="showTab('overview')" data-tab="overview" class="nav-btn flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition w-full text-left">
                             <span class="text-base">📊</span>
                             <span>Overview</span>
-                        </a>
-                        <a href="#" onclick="openAssessmentModal()" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-emerald-200 hover:bg-emerald-900 hover:text-white text-sm font-medium transition">
+                        </button>
+                        <button onclick="openAssessmentModal()" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-emerald-200 hover:bg-emerald-900 hover:text-white text-sm font-medium transition w-full text-left">
                             <span class="text-base">📝</span>
                             <span>Create Assessment</span>
-                        </a>
-                        <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-emerald-200 hover:bg-emerald-900 hover:text-white text-sm font-medium transition justify-between">
+                        </button>
+                        <button onclick="showTab('flagged')" data-tab="flagged" class="nav-btn flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition justify-between w-full text-left">
                             <div class="flex items-center space-x-3">
                                 <span class="text-base">🚩</span>
                                 <span>Flagged Sessions</span>
                             </div>
                             <span id="sidebar-flagged-badge" class="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 text-xs font-bold rounded-full border border-emerald-500/30">0</span>
-                        </a>
-                        <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-emerald-200 hover:bg-emerald-900 hover:text-white text-sm font-medium transition">
+                        </button>
+                        <button onclick="showTab('candidates')" data-tab="candidates" class="nav-btn flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition w-full text-left">
                             <span class="text-base">👥</span>
                             <span>Candidates</span>
-                        </a>
-                        <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-emerald-200 hover:bg-emerald-900 hover:text-white text-sm font-medium transition">
+                        </button>
+                        <button onclick="showTab('reports')" data-tab="reports" class="nav-btn flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition w-full text-left">
                             <span class="text-base">📄</span>
                             <span>Reports</span>
-                        </a>
+                        </button>
                     </nav>
                 </div>
 
                 <div>
                     <p class="px-3 text-[10px] font-semibold tracking-wider text-emerald-400 uppercase mb-2">System</p>
                     <nav class="space-y-1">
-                        <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-emerald-200 hover:bg-emerald-900 hover:text-white text-sm font-medium transition">
+                        <button onclick="showTab('settings')" data-tab="settings" class="nav-btn flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition w-full text-left">
                             <span class="text-base">⚙️</span>
                             <span>Settings</span>
-                        </a>
-                        <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-emerald-200 hover:bg-emerald-900 hover:text-white text-sm font-medium transition">
+                        </button>
+                        <button onclick="showTab('health')" data-tab="health" class="nav-btn flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition w-full text-left">
                             <span class="text-base">🟢</span>
                             <span>System Health</span>
-                        </a>
+                        </button>
                     </nav>
                 </div>
 
-                <!-- Interactive Range Slide Bar Controls -->
                 <div class="pt-2 border-t border-emerald-900 space-y-3">
                     <p class="px-3 text-[10px] font-semibold tracking-wider text-emerald-400 uppercase">AI Threshold Sliders</p>
                     
@@ -101,7 +95,6 @@
             </div>
         </div>
 
-        <!-- Live Proctoring Status Footer Widget -->
         <div class="p-4 border-t border-emerald-900 bg-emerald-950">
             <div class="bg-emerald-900/50 border border-emerald-800 rounded-xl p-3">
                 <div class="flex items-center justify-between mb-2">
@@ -122,10 +115,9 @@
     <!-- Main Wrapper Area -->
     <div class="flex-1 ml-64 flex flex-col min-w-0 bg-slate-50">
         
-        <!-- Top Navbar -->
         <header class="h-16 bg-white border-b border-slate-200 px-8 flex items-center justify-between sticky top-0 z-40 shadow-sm">
             <div class="flex items-center space-x-4">
-                <h2 class="text-lg font-bold text-slate-900 tracking-tight">Mentor Dashboard</h2>
+                <h2 id="page-title" class="text-lg font-bold text-slate-900 tracking-tight">Overview</h2>
                 <span class="text-xs text-slate-500 border-l border-slate-200 pl-4 hidden sm:inline">Welcome back, <strong id="mentor-name-display" class="text-slate-800">Loading...</strong> <span class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded ml-1 font-semibold border border-emerald-200">Active AI Mentor</span></span>
             </div>
             
@@ -137,80 +129,170 @@
             </div>
         </header>
 
-        <!-- Main Content Dashboard View -->
         <main class="p-8 space-y-8 flex-grow">
 
-            <!-- Top Metric Cards Grid -->
-            <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex flex-col justify-between">
-                    <div>
-                        <p class="text-xs font-medium text-slate-500">Total Assessments</p>
-                        <h3 id="metric-assessments" class="text-2xl font-bold text-slate-900 mt-1">--</h3>
-                    </div>
-                    <div class="mt-4 text-xs text-emerald-700 font-semibold bg-emerald-50 px-2 py-1 rounded w-fit border border-emerald-100">Live Database Count</div>
-                </div>
-                <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex flex-col justify-between">
-                    <div>
-                        <p class="text-xs font-medium text-slate-500">Total Candidates</p>
-                        <h3 id="metric-candidates" class="text-2xl font-bold text-slate-900 mt-1">--</h3>
-                    </div>
-                    <div class="mt-4 text-xs text-emerald-700 font-semibold bg-emerald-50 px-2 py-1 rounded w-fit border border-emerald-100">Active Enrollees</div>
-                </div>
-                <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex flex-col justify-between">
-                    <div>
-                        <p class="text-xs font-medium text-slate-500">Flagged Sessions</p>
-                        <h3 id="metric-flagged" class="text-2xl font-bold text-emerald-800 mt-1">--</h3>
-                    </div>
-                    <div class="mt-4 text-xs text-emerald-700 font-semibold bg-emerald-50 px-2 py-1 rounded w-fit border border-emerald-100">Requires Review</div>
-                </div>
-                <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex flex-col justify-between">
-                    <div>
-                        <p class="text-xs font-medium text-slate-500">Avg Integrity Score</p>
-                        <h3 id="metric-integrity-score" class="text-2xl font-bold text-slate-900 mt-1">-- <span class="text-xs text-slate-400">/100</span></h3>
-                    </div>
-                    <div class="mt-4 text-xs text-emerald-700 font-semibold bg-emerald-50 px-2 py-1 rounded w-fit border border-emerald-100">System Average</div>
-                </div>
-            </section>
+            <!-- ============ TAB: OVERVIEW ============ -->
+            <div id="tab-overview" class="tab-content space-y-8">
 
-            <!-- Charts & Analytics Row -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="bg-white border border-slate-200 p-6 rounded-xl shadow-sm flex flex-col justify-between">
-                    <h4 class="font-bold text-sm text-slate-900 mb-4">Integrity Score Distribution (Live Data)</h4>
-                    <div class="relative w-full h-56 flex items-center justify-center">
-                        <canvas id="integrityDoughnutChart"></canvas>
+                <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                    <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex flex-col justify-between">
+                        <div>
+                            <p class="text-xs font-medium text-slate-500">Total Assessments</p>
+                            <h3 id="metric-assessments" class="text-2xl font-bold text-slate-900 mt-1">--</h3>
+                        </div>
+                        <div class="mt-4 text-xs text-emerald-700 font-semibold bg-emerald-50 px-2 py-1 rounded w-fit border border-emerald-100">Live Database Count</div>
+                    </div>
+                    <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex flex-col justify-between">
+                        <div>
+                            <p class="text-xs font-medium text-slate-500">Total Candidates</p>
+                            <h3 id="metric-candidates" class="text-2xl font-bold text-slate-900 mt-1">--</h3>
+                        </div>
+                        <div class="mt-4 text-xs text-emerald-700 font-semibold bg-emerald-50 px-2 py-1 rounded w-fit border border-emerald-100">Active Enrollees</div>
+                    </div>
+                    <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex flex-col justify-between">
+                        <div>
+                            <p class="text-xs font-medium text-slate-500">Flagged Sessions</p>
+                            <h3 id="metric-flagged" class="text-2xl font-bold text-emerald-800 mt-1">--</h3>
+                        </div>
+                        <div class="mt-4 text-xs text-emerald-700 font-semibold bg-emerald-50 px-2 py-1 rounded w-fit border border-emerald-100">Requires Review</div>
+                    </div>
+                    <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex flex-col justify-between">
+                        <div>
+                            <p class="text-xs font-medium text-slate-500">Avg Integrity Score</p>
+                            <h3 id="metric-integrity-score" class="text-2xl font-bold text-slate-900 mt-1">-- <span class="text-xs text-slate-400">/100</span></h3>
+                        </div>
+                        <div class="mt-4 text-xs text-emerald-700 font-semibold bg-emerald-50 px-2 py-1 rounded w-fit border border-emerald-100">System Average</div>
+                    </div>
+                </section>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white border border-slate-200 p-6 rounded-xl shadow-sm flex flex-col justify-between">
+                        <h4 class="font-bold text-sm text-slate-900 mb-4">Integrity Score Distribution (Live Data)</h4>
+                        <div class="relative w-full h-56 flex items-center justify-center">
+                            <canvas id="integrityDoughnutChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white border border-slate-200 p-6 rounded-xl shadow-sm flex flex-col justify-between">
+                        <h4 class="font-bold text-sm text-slate-900 mb-4">Behavioral Violation Vectors (Live Data)</h4>
+                        <div class="relative w-full h-56">
+                            <canvas id="riskTrendLineChart"></canvas>
+                        </div>
                     </div>
                 </div>
-                <div class="bg-white border border-slate-200 p-6 rounded-xl shadow-sm flex flex-col justify-between">
-                    <h4 class="font-bold text-sm text-slate-900 mb-4">Behavioral Violation Vectors (Live Data)</h4>
-                    <div class="relative w-full h-56">
-                        <canvas id="riskTrendLineChart"></canvas>
+
+                <section class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
+                    <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+                        <h4 class="font-bold text-sm text-slate-900">Recent Sessions</h4>
+                        <button onclick="showTab('candidates')" class="text-xs text-emerald-700 font-semibold hover:underline">View All Candidates</button>
                     </div>
-                </div>
+                    <div class="overflow-x-auto flex-grow">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-200 text-[11px] font-semibold text-slate-500 uppercase tracking-wider bg-slate-50/70">
+                                    <th class="py-3 px-6">Candidate</th>
+                                    <th class="py-3 px-6">Exam</th>
+                                    <th class="py-3 px-6">Status</th>
+                                    <th class="py-3 px-6">Integrity Score</th>
+                                    <th class="py-3 px-6">Risk Level</th>
+                                    <th class="py-3 px-6 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="overview-recent-tbody" class="divide-y divide-slate-100 text-xs">
+                                <tr><td colspan="6" class="py-6 text-center text-slate-400">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
             </div>
 
-            <!-- Live Flagged Sessions Table -->
-            <section class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
-                <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
-                    <h4 class="font-bold text-sm text-slate-900">Live Flagged Exam Sessions</h4>
-                    <button onclick="fetchLiveData()" class="text-xs text-emerald-700 font-semibold hover:underline">Refresh Table</button>
-                </div>
-                <div class="overflow-x-auto flex-grow">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="border-b border-slate-200 text-[11px] font-semibold text-slate-500 uppercase tracking-wider bg-slate-50/70">
-                                <th class="py-3 px-6">Candidate</th>
-                                <th class="py-3 px-6">Exam</th>
-                                <th class="py-3 px-6">Integrity Score</th>
-                                <th class="py-3 px-6">Risk Level</th>
-                                <th class="py-3 px-6 text-right">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="live-sessions-tbody" class="divide-y divide-slate-100 text-xs">
-                            <tr><td colspan="5" class="py-6 text-center text-slate-400">Loading live sessions...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+            <!-- ============ TAB: FLAGGED SESSIONS ============ -->
+            <div id="tab-flagged" class="tab-content" style="display:none;">
+                <section class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
+                    <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+                        <h4 class="font-bold text-sm text-slate-900">Live Flagged Exam Sessions</h4>
+                        <button onclick="fetchLiveData()" class="text-xs text-emerald-700 font-semibold hover:underline">Refresh Table</button>
+                    </div>
+                    <div class="overflow-x-auto flex-grow">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-200 text-[11px] font-semibold text-slate-500 uppercase tracking-wider bg-slate-50/70">
+                                    <th class="py-3 px-6">Candidate</th>
+                                    <th class="py-3 px-6">Exam</th>
+                                    <th class="py-3 px-6">Integrity Score</th>
+                                    <th class="py-3 px-6">Risk Level</th>
+                                    <th class="py-3 px-6 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="live-sessions-tbody" class="divide-y divide-slate-100 text-xs">
+                                <tr><td colspan="5" class="py-6 text-center text-slate-400">Loading live sessions...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ============ TAB: CANDIDATES (shows every candidate, with names) ============ -->
+            <div id="tab-candidates" class="tab-content" style="display:none;">
+                <section class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
+                    <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+                        <h4 class="font-bold text-sm text-slate-900">All Candidates & Sessions</h4>
+                        <button onclick="fetchLiveData()" class="text-xs text-emerald-700 font-semibold hover:underline">Refresh</button>
+                    </div>
+                    <div class="overflow-x-auto flex-grow">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-200 text-[11px] font-semibold text-slate-500 uppercase tracking-wider bg-slate-50/70">
+                                    <th class="py-3 px-6">Candidate</th>
+                                    <th class="py-3 px-6">Email</th>
+                                    <th class="py-3 px-6">Exam</th>
+                                    <th class="py-3 px-6">Status</th>
+                                    <th class="py-3 px-6">Integrity Score</th>
+                                    <th class="py-3 px-6">Risk Level</th>
+                                    <th class="py-3 px-6 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="all-sessions-tbody" class="divide-y divide-slate-100 text-xs">
+                                <tr><td colspan="7" class="py-6 text-center text-slate-400">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ============ TAB: REPORTS (placeholder) ============ -->
+            <div id="tab-reports" class="tab-content" style="display:none;">
+                <section class="bg-white border border-slate-200 rounded-xl shadow-sm p-8 text-center">
+                    <p class="text-slate-500 text-sm">Report generation is not connected yet — this needs the backend reports endpoint hooked up.</p>
+                </section>
+            </div>
+
+            <!-- ============ TAB: SETTINGS ============ -->
+            <div id="tab-settings" class="tab-content" style="display:none;">
+                <section class="bg-white border border-slate-200 rounded-xl shadow-sm p-6 max-w-2xl">
+                    <h4 class="font-bold text-sm text-slate-900 mb-4">Configured Exams</h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-200 text-[11px] font-semibold text-slate-500 uppercase tracking-wider bg-slate-50/70">
+                                    <th class="py-3 px-4">Exam Name</th>
+                                    <th class="py-3 px-4">Duration (minutes)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="settings-tbody" class="divide-y divide-slate-100 text-xs">
+                                <tr><td colspan="2" class="py-6 text-center text-slate-400">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ============ TAB: SYSTEM HEALTH (placeholder) ============ -->
+            <div id="tab-health" class="tab-content" style="display:none;">
+                <section class="bg-white border border-slate-200 rounded-xl shadow-sm p-8 text-center">
+                    <p class="text-slate-500 text-sm">System health monitoring is not connected to a backend endpoint yet.</p>
+                </section>
+            </div>
+
         </main>
     </div>
 
@@ -261,29 +343,42 @@
         let vectorChart = null;
         const FLAGGED_THRESHOLD = 50;
 
-        // ---------------------------------------------------------
-        // FIX: Mentor name bug.
-        // The old code used localStorage with a hardcoded fallback
-        // ("Qudsiya Bano"), so ANY user opening this dashboard on the
-        // same browser would see whoever's name was saved there last
-        // — it never cleared and never matched who was actually using it.
-        //
-        // There is no real mentor authentication in this system yet
-        // (no login endpoint exists in the backend). Until that is built,
-        // we use sessionStorage (cleared when the tab closes, unique per
-        // tab) and ask once per session instead of silently reusing a
-        // stale name from a previous person.
-        // ---------------------------------------------------------
+        // ---------------- Tab switching (fixes dead sidebar links) ----------------
+        const tabTitles = {
+            overview: "Overview",
+            flagged: "Flagged Sessions",
+            candidates: "Candidates",
+            reports: "Reports",
+            settings: "Settings",
+            health: "System Health"
+        };
+
+        function showTab(tabName) {
+            document.querySelectorAll(".tab-content").forEach(el => el.style.display = "none");
+            document.getElementById(`tab-${tabName}`).style.display = "block";
+
+            document.querySelectorAll(".nav-btn").forEach(btn => {
+                if (btn.dataset.tab === tabName) {
+                    btn.classList.add("bg-emerald-600", "text-white", "shadow-sm");
+                    btn.classList.remove("text-emerald-200");
+                } else {
+                    btn.classList.remove("bg-emerald-600", "text-white", "shadow-sm");
+                    btn.classList.add("text-emerald-200");
+                }
+            });
+
+            document.getElementById("page-title").innerText = tabTitles[tabName];
+
+            if (tabName === "settings") loadExamSettings();
+        }
+
         function initMentorProfile() {
             let mentorName = sessionStorage.getItem('ezitech_mentor_name');
-
             if (!mentorName) {
                 mentorName = prompt("Please enter your name (Mentor):", "") || "Mentor";
                 sessionStorage.setItem('ezitech_mentor_name', mentorName);
             }
-
             document.getElementById('mentor-name-display').innerText = mentorName;
-
             const initials = mentorName.split(' ').filter(Boolean).map(n => n[0]).join('').toUpperCase() || "M";
             document.getElementById('mentor-avatar').innerText = initials;
         }
@@ -313,11 +408,6 @@
             container.appendChild(div);
         }
 
-        // ---------------------------------------------------------
-        // Real backend save: creates the exam duration (Settings API)
-        // and each entered question (Questions API). This replaces the
-        // old fake alert()-only saveAssessment().
-        // ---------------------------------------------------------
         async function saveAssessment() {
             const title = document.getElementById('examTitle').value.trim();
             const duration = parseInt(document.getElementById('examDuration').value);
@@ -336,13 +426,11 @@
             btn.innerText = "Saving...";
 
             try {
-                // Save exam name + duration
                 await apiRequest("/settings/", "PUT", {
                     exam_name: title,
                     duration_minutes: duration
                 });
 
-                // Save each question typed in the modal
                 const questionInputs = document.querySelectorAll("#questionsContainer .question-input");
                 let order = 1;
                 for (const input of questionInputs) {
@@ -369,9 +457,21 @@
             }
         }
 
-        // ---------------------------------------------------------
-        // Charts (created empty, populated by fetchLiveData with real data)
-        // ---------------------------------------------------------
+        async function loadExamSettings() {
+            const tbody = document.getElementById("settings-tbody");
+            const settings = await apiRequest("/settings/");
+            if (!settings || settings.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="2" class="py-6 text-center text-slate-400">No exams configured yet.</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = settings.map(s => `
+                <tr>
+                    <td class="py-3 px-4 font-medium text-slate-900">${s.exam_name}</td>
+                    <td class="py-3 px-4">${s.duration_minutes} min</td>
+                </tr>
+            `).join('');
+        }
+
         Chart.defaults.color = '#64748b';
         Chart.defaults.borderColor = '#e2e8f0';
 
@@ -438,9 +538,20 @@
             }
         }
 
-        // ---------------------------------------------------------
-        // Real data fetch — replaces the old Math.random() fake sync
-        // ---------------------------------------------------------
+        function renderSessionRow(s, viewLabel) {
+            const level = riskLevelFromScore(s.suspicion_score);
+            return `
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="py-3 px-6 font-bold text-slate-900">${s.candidate_name || 'Unknown'} <span class="text-[10px] text-slate-400 font-mono">(SES-${s.session_id})</span></td>
+                    <td class="py-3 px-6 text-slate-700">${s.exam_name || '-'}</td>
+                    <td class="py-3 px-6 text-slate-600 capitalize">${s.status || '-'}</td>
+                    <td class="py-3 px-6 font-bold text-emerald-700">${s.integrity_score ?? '--'}/100</td>
+                    <td class="py-3 px-6"><span class="px-2 py-0.5 border font-bold rounded text-[10px] ${riskBadgeClass(level)}">${level}</span></td>
+                    <td class="py-3 px-6 text-right"><a href="session-detail.html?session_id=${s.session_id}" class="px-3 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold rounded-lg text-xs transition border border-emerald-200 inline-block">${viewLabel}</a></td>
+                </tr>
+            `;
+        }
+
         async function fetchLiveData() {
             try {
                 const allSessions = (await apiRequest("/dashboard/sessions")) || [];
@@ -459,7 +570,6 @@
                 document.getElementById('sidebar-flagged-badge').innerText = flaggedSessions.length;
                 document.getElementById('live-monitoring-count').innerText = `Monitoring Live Sessions: ${allSessions.filter(s => s.status === 'in_progress').length} Active`;
 
-                // Doughnut: risk-level distribution across ALL scored sessions
                 const levelCounts = { High: 0, Medium: 0, Low: 0, Critical: 0 };
                 scored.forEach(s => {
                     const level = riskLevelFromScore(s.suspicion_score);
@@ -467,12 +577,20 @@
                 });
                 renderDoughnutChart([levelCounts.High, levelCounts.Medium, levelCounts.Low, levelCounts.Critical]);
 
-                // Flagged sessions table
-                const tbody = document.getElementById('live-sessions-tbody');
-                if (flaggedSessions.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-slate-400">No flagged sessions found.</td></tr>`;
+                // Overview: recent sessions (all, capped to last 5)
+                const overviewTbody = document.getElementById('overview-recent-tbody');
+                if (allSessions.length === 0) {
+                    overviewTbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-slate-400">No sessions yet.</td></tr>`;
                 } else {
-                    tbody.innerHTML = flaggedSessions.map(s => {
+                    overviewTbody.innerHTML = allSessions.slice(-5).reverse().map(s => renderSessionRow(s, "View")).join('');
+                }
+
+                // Flagged Sessions tab
+                const flaggedTbody = document.getElementById('live-sessions-tbody');
+                if (flaggedSessions.length === 0) {
+                    flaggedTbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-slate-400">No flagged sessions found.</td></tr>`;
+                } else {
+                    flaggedTbody.innerHTML = flaggedSessions.map(s => {
                         const level = riskLevelFromScore(s.suspicion_score);
                         return `
                             <tr class="hover:bg-slate-50 transition">
@@ -486,7 +604,27 @@
                     }).join('');
                 }
 
-                // Vector chart: pull each flagged session's timeline and tally which signals triggered
+                // Candidates tab: EVERY candidate/session with name + email
+                const allTbody = document.getElementById('all-sessions-tbody');
+                if (allSessions.length === 0) {
+                    allTbody.innerHTML = `<tr><td colspan="7" class="py-6 text-center text-slate-400">No candidates yet.</td></tr>`;
+                } else {
+                    allTbody.innerHTML = allSessions.map(s => {
+                        const level = riskLevelFromScore(s.suspicion_score);
+                        return `
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="py-3 px-6 font-bold text-slate-900">${s.candidate_name || 'Unknown'}</td>
+                                <td class="py-3 px-6 text-slate-600">${s.candidate_email || '-'}</td>
+                                <td class="py-3 px-6 text-slate-700">${s.exam_name || '-'}</td>
+                                <td class="py-3 px-6 text-slate-600 capitalize">${s.status || '-'}</td>
+                                <td class="py-3 px-6 font-bold text-emerald-700">${s.integrity_score ?? '--'}/100</td>
+                                <td class="py-3 px-6"><span class="px-2 py-0.5 border font-bold rounded text-[10px] ${riskBadgeClass(level)}">${level}</span></td>
+                                <td class="py-3 px-6 text-right"><a href="session-detail.html?session_id=${s.session_id}" class="px-3 py-1 bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold rounded-lg text-xs transition border border-slate-200 inline-block">View</a></td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+
                 const vectorLabels = ["tab_switching", "copy_paste", "browser_manipulation", "typing_pattern", "submission_timing", "collaboration"];
                 const vectorCounts = [0, 0, 0, 0, 0, 0];
 
@@ -504,13 +642,12 @@
 
             } catch (err) {
                 console.error("Failed to load dashboard data:", err);
-                document.getElementById('live-sessions-tbody').innerHTML =
-                    `<tr><td colspan="5" class="py-6 text-center text-slate-400">Failed to load data. Check console.</td></tr>`;
             }
         }
 
         window.addEventListener('DOMContentLoaded', () => {
             initMentorProfile();
+            showTab('overview');
             fetchLiveData();
         });
     </script>
