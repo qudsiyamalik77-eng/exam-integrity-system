@@ -3,296 +3,413 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Exam Integrity - Dashboard</title>
+    <title>Ezitech Mentor Dashboard | AI Exam Integrity System</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js for graphs -->
+    <!-- Chart.js for Live Analytics & Charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/api.js"></script>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex">
+<body class="bg-white text-slate-800 font-sans antialiased min-h-screen flex">
 
     <!-- Sidebar Navigation -->
-    <aside class="w-64 bg-white border-r border-slate-200 flex flex-col justify-between hidden md:flex shadow-sm">
-        <div>
-            <div class="p-6 border-b border-slate-100 flex items-center space-x-3">
-                <i class="fa-solid fa-shield-halved text-emerald-600 text-2xl"></i>
-                <span class="font-bold text-lg tracking-wide text-slate-900">ExamIntegrity</span>
+    <aside class="w-64 bg-emerald-950 border-r border-emerald-900 flex flex-col justify-between fixed inset-y-0 left-0 z-50 text-white">
+        <!-- Scrollable Sidebar Content Area -->
+        <div class="flex-1 overflow-y-auto px-4 py-6 space-y-6 custom-scrollbar">
+            <!-- Brand Header -->
+            <div class="flex items-center space-x-3 pb-4 border-b border-emerald-900">
+                <div class="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center text-white font-bold text-base shadow-sm">E</div>
+                <div>
+                    <h1 class="text-sm font-bold tracking-tight text-white">Ezitech</h1>
+                    <p class="text-[10px] text-emerald-300 font-medium">AI Exam Integrity System</p>
+                </div>
             </div>
-            <nav class="p-4 space-y-2">
-                <a href="dashboard.html" class="flex items-center space-x-3 px-4 py-3 bg-emerald-600 text-white rounded-xl font-medium transition shadow-md shadow-emerald-600/20">
-                    <i class="fa-solid fa-chart-pie w-5"></i>
-                    <span>Overview</span>
-                </a>
-                <a href="live-sessions.html" class="flex items-center space-x-3 px-4 py-3 text-slate-600 hover:bg-slate-100 hover:text-slate-900 rounded-xl font-medium transition">
-                    <i class="fa-solid fa-video w-5"></i>
-                    <span>Live Sessions</span>
-                </a>
-                <a href="reports.html" class="flex items-center space-x-3 px-4 py-3 text-slate-600 hover:bg-slate-100 hover:text-slate-900 rounded-xl font-medium transition">
-                    <i class="fa-solid fa-triangle-exclamation w-5"></i>
-                    <span>Flagged Reports</span>
-                </a>
-            </nav>
+
+            <!-- Navigation Links -->
+            <div class="space-y-4">
+                <div>
+                    <p class="px-3 text-[10px] font-semibold tracking-wider text-emerald-400 uppercase mb-2">Main</p>
+                    <nav class="space-y-1">
+                        <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg bg-emerald-600 text-white text-sm font-medium shadow-sm transition">
+                            <span class="text-base">📊</span>
+                            <span>Overview</span>
+                        </a>
+                        <a href="#" onclick="openAssessmentModal()" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-emerald-200 hover:bg-emerald-900 hover:text-white text-sm font-medium transition">
+                            <span class="text-base">📝</span>
+                            <span>Create Assessment</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-emerald-200 hover:bg-emerald-900 hover:text-white text-sm font-medium transition justify-between">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-base">🚩</span>
+                                <span>Flagged Sessions</span>
+                            </div>
+                            <span id="sidebar-flagged-badge" class="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 text-xs font-bold rounded-full border border-emerald-500/30">0</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-emerald-200 hover:bg-emerald-900 hover:text-white text-sm font-medium transition">
+                            <span class="text-base">👥</span>
+                            <span>Candidates</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-emerald-200 hover:bg-emerald-900 hover:text-white text-sm font-medium transition">
+                            <span class="text-base">📄</span>
+                            <span>Reports</span>
+                        </a>
+                    </nav>
+                </div>
+
+                <div>
+                    <p class="px-3 text-[10px] font-semibold tracking-wider text-emerald-400 uppercase mb-2">System</p>
+                    <nav class="space-y-1">
+                        <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-emerald-200 hover:bg-emerald-900 hover:text-white text-sm font-medium transition">
+                            <span class="text-base">⚙️</span>
+                            <span>Settings</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-emerald-200 hover:bg-emerald-900 hover:text-white text-sm font-medium transition">
+                            <span class="text-base">🟢</span>
+                            <span>System Health</span>
+                        </a>
+                    </nav>
+                </div>
+
+                <!-- Interactive Range Slide Bar Controls -->
+                <div class="pt-2 border-t border-emerald-900 space-y-3">
+                    <p class="px-3 text-[10px] font-semibold tracking-wider text-emerald-400 uppercase">AI Threshold Sliders</p>
+                    
+                    <div class="px-3 space-y-1">
+                        <div class="flex justify-between text-xs text-emerald-200">
+                            <span>Gaze Sensitivity</span>
+                            <span id="val-gaze" class="font-bold text-white">75%</span>
+                        </div>
+                        <input type="range" min="0" max="100" value="75" oninput="updateSlider('gaze', this.value)" class="w-full accent-emerald-500 bg-emerald-900 rounded-lg appearance-none cursor-pointer h-1.5">
+                    </div>
+
+                    <div class="px-3 space-y-1">
+                        <div class="flex justify-between text-xs text-emerald-200">
+                            <span>Audio Spike Limit</span>
+                            <span id="val-audio" class="font-bold text-white">45 dB</span>
+                        </div>
+                        <input type="range" min="10" max="90" value="45" oninput="updateSlider('audio', this.value)" class="w-full accent-emerald-500 bg-emerald-900 rounded-lg appearance-none cursor-pointer h-1.5">
+                    </div>
+
+                    <div class="px-3 space-y-1">
+                        <div class="flex justify-between text-xs text-emerald-200">
+                            <span>Tab-Switch Limit</span>
+                            <span id="val-tabs" class="font-bold text-white">3 Max</span>
+                        </div>
+                        <input type="range" min="1" max="10" value="3" oninput="updateSlider('tabs', this.value)" class="w-full accent-emerald-500 bg-emerald-900 rounded-lg appearance-none cursor-pointer h-1.5">
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="p-4 border-t border-slate-100">
-            <div class="flex items-center space-x-3 px-4 py-2 text-slate-500 text-sm">
-                <i class="fa-solid fa-circle text-emerald-500 text-xs"></i>
-                <span>System Online</span>
+
+        <!-- Live Proctoring Status Footer Widget -->
+        <div class="p-4 border-t border-emerald-900 bg-emerald-950">
+            <div class="bg-emerald-900/50 border border-emerald-800 rounded-xl p-3">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold text-emerald-100">AI Proctoring Status</span>
+                    <span class="w-2 h-2 bg-emerald-400 rounded-full animate-ping"></span>
+                </div>
+                <div class="space-y-1 text-xs text-emerald-300 mb-3">
+                    <p class="flex items-center"><span class="w-1.5 h-1.5 bg-emerald-400 rounded-full mr-2"></span>All Systems Active</p>
+                    <p id="live-monitoring-count">Monitoring Live Sessions: -- Active</p>
+                </div>
+                <button onclick="fetchLiveData()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-400/30 text-xs font-semibold py-2 px-3 rounded-lg transition text-center shadow-sm">
+                    Refresh Dashboard ↗
+                </button>
             </div>
         </div>
     </aside>
 
-    <!-- Main Content Area -->
-    <main class="flex-1 flex flex-col min-h-screen overflow-y-auto">
-        <!-- Top Header -->
-        <header class="bg-white border-b border-slate-200 px-8 py-4 flex justify-between items-center shadow-xs">
+    <!-- Main Wrapper Area -->
+    <div class="flex-1 ml-64 flex flex-col min-w-0 bg-slate-50">
+        
+        <!-- Top Navbar -->
+        <header class="h-16 bg-white border-b border-slate-200 px-8 flex items-center justify-between sticky top-0 z-40 shadow-sm">
             <div class="flex items-center space-x-4">
-                <h1 class="text-xl font-bold tracking-tight text-slate-900">AI Proctoring Dashboard</h1>
+                <h2 class="text-lg font-bold text-slate-900 tracking-tight">Mentor Dashboard</h2>
+                <span class="text-xs text-slate-500 border-l border-slate-200 pl-4 hidden sm:inline">Welcome back, <strong id="mentor-name-display" class="text-slate-800">Loading...</strong> <span class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded ml-1 font-semibold border border-emerald-200">Active AI Mentor</span></span>
             </div>
-            <div class="flex items-center space-x-4">
-                <span class="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-full font-medium">
-                    <i class="fa-solid fa-bolt mr-1"></i> Real-time Monitoring Active
-                </span>
+            
+            <div class="flex items-center space-x-5">
+                <button onclick="openAssessmentModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-sm transition flex items-center space-x-2">
+                    <span>+ Create New Exam</span>
+                </button>
+                <div id="mentor-avatar" class="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center text-white font-bold text-xs ring-2 ring-emerald-600/20">--</div>
             </div>
         </header>
 
-        <!-- Dashboard Content -->
-        <div class="p-8 space-y-8 max-w-7xl w-full mx-auto">
-            
-            <!-- Stats Grid Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Card 1 -->
-                <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-xs hover:shadow-md transition">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Assessments</p>
-                            <h3 id="stat-total" class="text-3xl font-bold mt-2 text-slate-900">0</h3>
-                        </div>
-                        <div class="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
-                            <i class="fa-solid fa-users text-lg"></i>
-                        </div>
-                    </div>
-                </div>
+        <!-- Main Content Dashboard View -->
+        <main class="p-8 space-y-8 flex-grow">
 
-                <!-- Card 2 -->
-                <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-xs hover:shadow-md transition">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Flagged Sessions</p>
-                            <h3 id="stat-flagged" class="text-3xl font-bold mt-2 text-rose-600">0</h3>
-                        </div>
-                        <div class="p-3 bg-rose-50 text-rose-600 rounded-xl">
-                            <i class="fa-solid fa-triangle-exclamation text-lg"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 3 -->
-                <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-xs hover:shadow-md transition">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Avg Integrity Score</p>
-                            <h3 id="stat-integrity" class="text-3xl font-bold mt-2 text-emerald-600">0%</h3>
-                        </div>
-                        <div class="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
-                            <i class="fa-solid fa-shield-check text-lg"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 4 -->
-                <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-xs hover:shadow-md transition">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">AI Confidence Rate</p>
-                            <h3 id="stat-confidence" class="text-3xl font-bold mt-2 text-emerald-700">0%</h3>
-                        </div>
-                        <div class="p-3 bg-emerald-50 text-emerald-700 rounded-xl">
-                            <i class="fa-solid fa-brain text-lg"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Charts & Analytics Section -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 bg-white border border-slate-200 p-6 rounded-2xl shadow-xs">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="font-bold text-base text-slate-900">Behavioral Violation Vectors</h2>
-                        <span class="text-xs text-slate-500">Live Analytics</span>
-                    </div>
-                    <div class="h-72 relative">
-                        <canvas id="violationChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-xs flex flex-col justify-between">
+            <!-- Top Metric Cards Grid -->
+            <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex flex-col justify-between">
                     <div>
-                        <h2 class="font-bold text-base text-slate-900 mb-4">System Status</h2>
-                        <div class="space-y-4 text-sm text-slate-600">
-                            <div class="flex justify-between items-center py-2 border-b border-slate-100">
-                                <span>Behavioral Analytics Engine</span>
-                                <span class="text-emerald-600 font-medium">Operational</span>
-                            </div>
-                            <div class="flex justify-between items-center py-2 border-b border-slate-100">
-                                <span>Tab Switch Detector</span>
-                                <span class="text-emerald-600 font-medium">Active</span>
-                            </div>
-                            <div class="flex justify-between items-center py-2 border-b border-slate-100">
-                                <span>Risk Scoring Engine</span>
-                                <span class="text-emerald-600 font-medium">Monitoring</span>
-                            </div>
-                        </div>
+                        <p class="text-xs font-medium text-slate-500">Total Assessments</p>
+                        <h3 id="metric-assessments" class="text-2xl font-bold text-slate-900 mt-1">--</h3>
                     </div>
-                    <div class="mt-6 p-4 bg-emerald-50/50 rounded-xl border border-emerald-100 text-xs text-slate-600">
-                        <i class="fa-solid fa-circle-info text-emerald-600 mr-1"></i> AI models are running in local endpoint mode with secure session state.
+                    <div class="mt-4 text-xs text-emerald-700 font-semibold bg-emerald-50 px-2 py-1 rounded w-fit border border-emerald-100">Live Database Count</div>
+                </div>
+                <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex flex-col justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-slate-500">Total Candidates</p>
+                        <h3 id="metric-candidates" class="text-2xl font-bold text-slate-900 mt-1">--</h3>
+                    </div>
+                    <div class="mt-4 text-xs text-emerald-700 font-semibold bg-emerald-50 px-2 py-1 rounded w-fit border border-emerald-100">Active Enrollees</div>
+                </div>
+                <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex flex-col justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-slate-500">Flagged Sessions</p>
+                        <h3 id="metric-flagged" class="text-2xl font-bold text-emerald-800 mt-1">--</h3>
+                    </div>
+                    <div class="mt-4 text-xs text-emerald-700 font-semibold bg-emerald-50 px-2 py-1 rounded w-fit border border-emerald-100">Requires Review</div>
+                </div>
+                <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex flex-col justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-slate-500">Avg Integrity Score</p>
+                        <h3 id="metric-integrity-score" class="text-2xl font-bold text-slate-900 mt-1">-- <span class="text-xs text-slate-400">/100</span></h3>
+                    </div>
+                    <div class="mt-4 text-xs text-emerald-700 font-semibold bg-emerald-50 px-2 py-1 rounded w-fit border border-emerald-100">System Average</div>
+                </div>
+            </section>
+
+            <!-- Charts & Analytics Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white border border-slate-200 p-6 rounded-xl shadow-sm flex flex-col justify-between">
+                    <h4 class="font-bold text-sm text-slate-900 mb-4">Integrity Score Distribution (Live Data)</h4>
+                    <div class="relative w-full h-56 flex items-center justify-center">
+                        <canvas id="integrityDoughnutChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white border border-slate-200 p-6 rounded-xl shadow-sm flex flex-col justify-between">
+                    <h4 class="font-bold text-sm text-slate-900 mb-4">Behavioral Violation Vectors (Live Data)</h4>
+                    <div class="relative w-full h-56">
+                        <canvas id="riskTrendLineChart"></canvas>
                     </div>
                 </div>
             </div>
 
-            <!-- Flagged Reports Table Section -->
-            <div class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
-                <div class="p-6 border-b border-slate-200 flex justify-between items-center">
-                    <h2 class="font-bold text-base text-slate-900">Recent Flagged Reports</h2>
-                    <a href="reports.html" class="text-xs text-emerald-600 hover:underline font-medium">View All</a>
+            <!-- Live Flagged Sessions Table -->
+            <section class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
+                <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+                    <h4 class="font-bold text-sm text-slate-900">Live Flagged Exam Sessions</h4>
+                    <button onclick="fetchLiveData()" class="text-xs text-emerald-700 font-semibold hover:underline">Refresh Table</button>
                 </div>
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto flex-grow">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="border-b border-slate-200 text-xs text-slate-500 uppercase tracking-wider bg-slate-50">
-                                <th class="py-3 px-6 font-semibold">Session</th>
-                                <th class="py-3 px-6 font-semibold">Candidate Name</th>
-                                <th class="py-3 px-6 font-semibold">Integrity Score</th>
-                                <th class="py-3 px-6 font-semibold">Suspicion Index</th>
-                                <th class="py-3 px-6 font-semibold">Primary Flag Reason</th>
-                                <th class="py-3 px-6 font-semibold text-right">Action</th>
+                            <tr class="border-b border-slate-200 text-[11px] font-semibold text-slate-500 uppercase tracking-wider bg-slate-50/70">
+                                <th class="py-3 px-6">Candidate</th>
+                                <th class="py-3 px-6">Exam</th>
+                                <th class="py-3 px-6">Integrity Score</th>
+                                <th class="py-3 px-6">Risk Level</th>
+                                <th class="py-3 px-6 text-right">Action</th>
                             </tr>
                         </thead>
-                        <tbody id="flagged-reports-tbody" class="divide-y divide-slate-100 text-sm text-slate-700">
-                            <tr>
-                                <td colspan="6" class="py-6 text-center text-slate-400">Loading live reports...</td>
-                            </tr>
+                        <tbody id="live-sessions-tbody" class="divide-y divide-slate-100 text-xs">
+                            <tr><td colspan="5" class="py-6 text-center text-slate-400">Loading live sessions...</td></tr>
                         </tbody>
                     </table>
                 </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Assessment Configuration Modal -->
+    <div id="assessmentModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="px-6 py-4 bg-emerald-900 text-white flex justify-between items-center">
+                <h3 class="font-bold text-base">Create & Schedule New Assessment</h3>
+                <button onclick="closeAssessmentModal()" class="text-emerald-200 hover:text-white text-lg font-bold">✕</button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto space-y-5 text-xs">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Assessment Title</label>
+                        <input type="text" id="examTitle" placeholder="e.g., Python & AI Fundamentals" class="w-full border border-slate-300 rounded-lg p-2.5 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Duration / Time Set (Minutes)</label>
+                        <input type="number" id="examDuration" value="45" class="w-full border border-slate-300 rounded-lg p-2.5 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600">
+                    </div>
+                </div>
+
+                <div class="space-y-3 pt-2 border-t border-slate-200">
+                    <div class="flex justify-between items-center">
+                        <h4 class="font-bold text-slate-900 text-sm">Add Exam Questions</h4>
+                        <button onclick="addQuestionField()" class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded font-semibold text-xs hover:bg-emerald-100">+ Add Question</button>
+                    </div>
+                    
+                    <div id="questionsContainer" class="space-y-3">
+                        <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-2">
+                            <input type="text" placeholder="Question 1: What is a perceptron?" class="question-input w-full border border-slate-300 rounded p-2 bg-white font-medium">
+                        </div>
+                    </div>
+                </div>
             </div>
 
+            <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex justify-end space-x-3">
+                <button onclick="closeAssessmentModal()" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-lg hover:bg-slate-300 transition">Cancel</button>
+                <button onclick="saveAssessment()" id="save-assessment-btn" class="px-5 py-2 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 shadow-sm transition">Deploy Assessment</button>
+            </div>
         </div>
-    </main>
+    </div>
 
-    <!-- Script to Fetch Data & Render Chart -->
-    <script src="js/api.js"></script>
+    <!-- Script Controllers -->
     <script>
-        let myChart = null;
-        const FLAGGED_THRESHOLD = 50; // must match backend's FLAGGED_THRESHOLD in dashboard.py
+        let doughnutChart = null;
+        let vectorChart = null;
+        const FLAGGED_THRESHOLD = 50;
 
-        function renderChart(vectorCounts) {
-            const ctx = document.getElementById('violationChart').getContext('2d');
-            if (myChart) myChart.destroy();
+        // ---------------------------------------------------------
+        // FIX: Mentor name bug.
+        // The old code used localStorage with a hardcoded fallback
+        // ("Qudsiya Bano"), so ANY user opening this dashboard on the
+        // same browser would see whoever's name was saved there last
+        // — it never cleared and never matched who was actually using it.
+        //
+        // There is no real mentor authentication in this system yet
+        // (no login endpoint exists in the backend). Until that is built,
+        // we use sessionStorage (cleared when the tab closes, unique per
+        // tab) and ask once per session instead of silently reusing a
+        // stale name from a previous person.
+        // ---------------------------------------------------------
+        function initMentorProfile() {
+            let mentorName = sessionStorage.getItem('ezitech_mentor_name');
 
-            myChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Tab Switching', 'Copy/Paste', 'Mouse Activity', 'Typing Pattern', 'Submission Speed', 'Multi-Device/VPN'],
-                    datasets: [{
-                        label: 'Sessions Triggering Signal',
-                        data: vectorCounts,
-                        backgroundColor: '#16a34a', // Professional Green
-                        borderRadius: 8,
-                        barThickness: 24
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 11 } } },
-                        y: { grid: { color: '#f1f5f9' }, ticks: { color: '#64748b', font: { size: 11 } } }
+            if (!mentorName) {
+                mentorName = prompt("Please enter your name (Mentor):", "") || "Mentor";
+                sessionStorage.setItem('ezitech_mentor_name', mentorName);
+            }
+
+            document.getElementById('mentor-name-display').innerText = mentorName;
+
+            const initials = mentorName.split(' ').filter(Boolean).map(n => n[0]).join('').toUpperCase() || "M";
+            document.getElementById('mentor-avatar').innerText = initials;
+        }
+
+        function updateSlider(type, value) {
+            if (type === 'gaze') document.getElementById('val-gaze').innerText = value + '%';
+            if (type === 'audio') document.getElementById('val-audio').innerText = value + ' dB';
+            if (type === 'tabs') document.getElementById('val-tabs').innerText = value + ' Max';
+        }
+
+        function openAssessmentModal() {
+            document.getElementById('assessmentModal').classList.remove('hidden');
+        }
+
+        function closeAssessmentModal() {
+            document.getElementById('assessmentModal').classList.add('hidden');
+        }
+
+        function addQuestionField() {
+            const container = document.getElementById('questionsContainer');
+            const count = container.children.length + 1;
+            const div = document.createElement('div');
+            div.className = "p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-2";
+            div.innerHTML = `
+                <input type="text" placeholder="Question ${count}: Enter prompt here..." class="question-input w-full border border-slate-300 rounded p-2 bg-white font-medium">
+            `;
+            container.appendChild(div);
+        }
+
+        // ---------------------------------------------------------
+        // Real backend save: creates the exam duration (Settings API)
+        // and each entered question (Questions API). This replaces the
+        // old fake alert()-only saveAssessment().
+        // ---------------------------------------------------------
+        async function saveAssessment() {
+            const title = document.getElementById('examTitle').value.trim();
+            const duration = parseInt(document.getElementById('examDuration').value);
+            const btn = document.getElementById('save-assessment-btn');
+
+            if (!title) {
+                alert('Please enter an assessment title.');
+                return;
+            }
+            if (!duration || duration <= 0) {
+                alert('Please enter a valid duration.');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "Saving...";
+
+            try {
+                // Save exam name + duration
+                await apiRequest("/settings/", "PUT", {
+                    exam_name: title,
+                    duration_minutes: duration
+                });
+
+                // Save each question typed in the modal
+                const questionInputs = document.querySelectorAll("#questionsContainer .question-input");
+                let order = 1;
+                for (const input of questionInputs) {
+                    const text = input.value.trim();
+                    if (text) {
+                        await apiRequest("/questions/", "POST", {
+                            exam_name: title,
+                            question_text: text,
+                            question_order: order
+                        });
+                        order++;
                     }
                 }
-            });
-        }
 
-        // Picks the highest-scoring triggered signal from a session's signals_json
-        // (fetched via the timeline endpoint) to show as the "Primary Flag Reason".
-        function pickPrimaryReason(signals) {
-            if (!signals || signals.length === 0) return "No signals recorded";
-            const sorted = [...signals].sort((a, b) => (b.score || 0) - (a.score || 0));
-            const top = sorted[0];
-            return top && top.score > 0 ? top.name.replace(/_/g, " ") : "No significant signal";
-        }
-
-        async function fetchDashboardData() {
-            try {
-                // All sessions -> used to compute the summary stat cards
-                const allSessions = (await apiRequest("/dashboard/sessions")) || [];
-
-                const total = allSessions.length;
-                const scored = allSessions.filter(s => s.suspicion_score !== null && s.suspicion_score !== undefined);
-                const flaggedCount = scored.filter(s => s.suspicion_score >= FLAGGED_THRESHOLD).length;
-                const avgIntegrity = scored.length
-                    ? Math.round(scored.reduce((sum, s) => sum + (s.integrity_score || 0), 0) / scored.length)
-                    : 0;
-                const avgConfidence = scored.length
-                    ? Math.round(scored.reduce((sum, s) => sum + (s.confidence_score || 0), 0) / scored.length)
-                    : 0;
-
-                document.getElementById("stat-total").innerText = total;
-                document.getElementById("stat-flagged").innerText = flaggedCount;
-                document.getElementById("stat-integrity").innerText = avgIntegrity + "%";
-                document.getElementById("stat-confidence").innerText = avgConfidence + "%";
-
-                // Flagged reports fetch
-                const reportsRes = (await apiRequest("/dashboard/flagged")) || [];
-                const tbody = document.getElementById("flagged-reports-tbody");
-
-                if (reportsRes.length > 0) {
-                    tbody.innerHTML = reportsRes.map(r => `
-                        <tr class="hover:bg-slate-50 transition">
-                            <td class="py-3 px-6 font-mono text-xs text-slate-500">SES-${r.session_id}</td>
-                            <td class="py-3 px-6 font-semibold text-slate-900">${r.candidate_name || 'Unknown Candidate'}</td>
-                            <td class="py-3 px-6 text-emerald-600 font-bold">${r.integrity_score ?? '--'}%</td>
-                            <td class="py-3 px-6 font-semibold text-rose-600">${r.suspicion_score ?? '--'}/100</td>
-                            <td class="py-3 px-6 text-slate-600 text-xs" id="reason-${r.session_id}">Loading...</td>
-                            <td class="py-3 px-6 text-right">
-                                <a href="session-detail.html?session_id=${r.session_id}" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-medium transition shadow-xs">Review</a>
-                            </td>
-                        </tr>
-                    `).join('');
-
-                    // Fetch each flagged session's timeline once, use it for both
-                    // the "Primary Flag Reason" cell and the chart's vector counts.
-                    const vectorLabels = ["tab_switching", "copy_paste", "mouse_activity", "typing_pattern", "submission_speed", "multi_device_vpn"];
-                    const vectorCounts = [0, 0, 0, 0, 0, 0];
-
-                    await Promise.all(reportsRes.map(async (r) => {
-                        const timeline = await apiRequest(`/dashboard/${r.session_id}/timeline`);
-                        const signals = timeline && timeline.score && timeline.score.signals_json;
-
-                        const cell = document.getElementById(`reason-${r.session_id}`);
-                        if (cell) cell.innerText = pickPrimaryReason(signals);
-
-                        if (signals) {
-                            signals.forEach(sig => {
-                                const idx = vectorLabels.indexOf(sig.name);
-                                if (idx !== -1 && sig.score > 0) vectorCounts[idx]++;
-                            });
-                        }
-                    }));
-
-                    renderChart(vectorCounts);
-                } else {
-                    tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-slate-400">No flagged reports recorded.</td></tr>`;
-                    renderChart([0, 0, 0, 0, 0, 0]);
-                }
+                alert(`"${title}" saved successfully (${duration} minutes, ${order - 1} question(s)).`);
+                closeAssessmentModal();
+                fetchLiveData();
             } catch (err) {
-                console.error("Dashboard Load Error:", err);
+                console.error("Failed to save assessment:", err);
+                alert("Something went wrong saving the assessment. Check console.");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Deploy Assessment";
             }
         }
 
-        window.addEventListener('DOMContentLoaded', fetchDashboardData);
-    </script>
-</body>
-</html>
+        // ---------------------------------------------------------
+        // Charts (created empty, populated by fetchLiveData with real data)
+        // ---------------------------------------------------------
+        Chart.defaults.color = '#64748b';
+        Chart.defaults.borderColor = '#e2e8f0';
+
+        function renderDoughnutChart(counts) {
+            const ctx = document.getElementById('integrityDoughnutChart').getContext('2d');
+            if (doughnutChart) doughnutChart.destroy();
+            doughnutChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['High', 'Medium', 'Low', 'Critical'],
+                    datasets: [{
+                        data: counts,
+                        backgroundColor: ['#059669', '#10b981', '#34d399', '#6ee7b7'],
+                        borderWidth: 0,
+                        cutout: '75%'
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        function renderVectorChart(vectorCounts) {
+            const ctx = document.getElementById('riskTrendLineChart').getContext('2d');
+            if (vectorChart) vectorChart.destroy();
+            vectorChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Tab Switch', 'Copy/Paste', 'Browser Manip.', 'Typing', 'Timing', 'Collab.'],
+                    datasets: [{
+                        label: 'Sessions Triggering Signal',
+                        data: vectorCounts,
+                        backgroundColor: [
+                            'rgba(5, 150, 105, 0.7)',
+                            'rgba(16, 185, 129, 0.7)',
+                            'rgba(52, 211, 153, 0.7)',
+                            'rgba(4, 120, 87, 0.7)',
+                            'rgba(20, 184, 166, 0.7)',
+                            'rgba(6, 95, 70, 1)'
+                        ],
+                        borderColor: '#047857',
+                        borderWidth: 1,
