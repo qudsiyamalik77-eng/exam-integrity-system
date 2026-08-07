@@ -129,7 +129,7 @@
             </div>
         </header>
 
-        <main class="p-8 space-y-8 flex-grow">
+        <main id="main-content-area" class="p-8 space-y-8 flex-grow overflow-y-auto">
 
             <!-- ============ TAB: OVERVIEW ============ -->
             <div id="tab-overview" class="tab-content space-y-8">
@@ -343,7 +343,6 @@
         let vectorChart = null;
         const FLAGGED_THRESHOLD = 50;
 
-        // ---------------- Tab switching (fixes dead sidebar links) ----------------
         const tabTitles = {
             overview: "Overview",
             flagged: "Flagged Sessions",
@@ -355,7 +354,8 @@
 
         function showTab(tabName) {
             document.querySelectorAll(".tab-content").forEach(el => el.style.display = "none");
-            document.getElementById(`tab-${tabName}`).style.display = "block";
+            const target = document.getElementById(`tab-${tabName}`);
+            if (target) target.style.display = "block";
 
             document.querySelectorAll(".nav-btn").forEach(btn => {
                 if (btn.dataset.tab === tabName) {
@@ -367,7 +367,13 @@
                 }
             });
 
-            document.getElementById("page-title").innerText = tabTitles[tabName];
+            document.getElementById("page-title").innerText = tabTitles[tabName] || tabName;
+
+            // Scroll both the page and the scrollable main content area back to top,
+            // so clicking a lower sidebar link is always visible immediately.
+            window.scrollTo(0, 0);
+            const mainArea = document.getElementById("main-content-area");
+            if (mainArea) mainArea.scrollTop = 0;
 
             if (tabName === "settings") loadExamSettings();
         }
@@ -577,7 +583,6 @@
                 });
                 renderDoughnutChart([levelCounts.High, levelCounts.Medium, levelCounts.Low, levelCounts.Critical]);
 
-                // Overview: recent sessions (all, capped to last 5)
                 const overviewTbody = document.getElementById('overview-recent-tbody');
                 if (allSessions.length === 0) {
                     overviewTbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-slate-400">No sessions yet.</td></tr>`;
@@ -585,7 +590,6 @@
                     overviewTbody.innerHTML = allSessions.slice(-5).reverse().map(s => renderSessionRow(s, "View")).join('');
                 }
 
-                // Flagged Sessions tab
                 const flaggedTbody = document.getElementById('live-sessions-tbody');
                 if (flaggedSessions.length === 0) {
                     flaggedTbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-slate-400">No flagged sessions found.</td></tr>`;
@@ -604,7 +608,6 @@
                     }).join('');
                 }
 
-                // Candidates tab: EVERY candidate/session with name + email
                 const allTbody = document.getElementById('all-sessions-tbody');
                 if (allSessions.length === 0) {
                     allTbody.innerHTML = `<tr><td colspan="7" class="py-6 text-center text-slate-400">No candidates yet.</td></tr>`;
