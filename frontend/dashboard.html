@@ -413,3 +413,106 @@
                         ],
                         borderColor: '#047857',
                         borderWidth: 1,
+                        borderRadius: 6
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+        }
+
+        function riskLevelFromScore(suspicionScore) {
+            if (suspicionScore === null || suspicionScore === undefined) return "Unscored";
+            if (suspicionScore >= 75) return "Critical";
+            if (suspicionScore >= 50) return "High";
+            if (suspicionScore >= 25) return "Medium";
+            return "Low";
+        }
+
+        function riskBadgeClass(level) {
+            switch (level) {
+                case "Critical": return "bg-emerald-800 text-white border-emerald-900";
+                case "High": return "bg-emerald-50 text-emerald-700 border-emerald-200";
+                case "Medium": return "bg-amber-50 text-amber-700 border-amber-200";
+                case "Low": return "bg-slate-50 text-slate-600 border-slate-200";
+                default: return "bg-slate-50 text-slate-400 border-slate-200";
+            }
+        }
+
+        // ---------------------------------------------------------
+        // Real data fetch — replaces the old Math.random() fake sync
+        // ---------------------------------------------------------
+        async function fetchLiveData() {
+            try {
+                const allSessions = (await apiRequest("/dashboard/sessions")) || [];
+                const flaggedSessions = (await apiRequest("/dashboard/flagged")) || [];
+
+                const uniqueCandidates = new Set(allSessions.map(s => s.candidate_email || s.candidate_id));
+                const scored = allSessions.filter(s => s.integrity_score !== null && s.integrity_score !== undefined);
+                const avgIntegrity = scored.length
+                    ? (scored.reduce((sum, s) => sum + s.integrity_score, 0) / scored.length).toFixed(1)
+                    : "--";
+
+                document.getElementById('metric-assessments').innerText = allSessions.length;
+                document.getElementById('metric-candidates').innerText = uniqueCandidates.size;
+                document.getElementById('metric-flagged').innerText = flaggedSessions.length;
+                document.getElementById('metric-integrity-score').innerHTML = `${avgIntegrity} <span class="text-xs text-slate-400">/100</span>`;
+                document.getElementById('sidebar-flagged-badge').innerText = flaggedSessions.length;
+                document.getElementById('live-monitoring-count').innerText = `Monitoring Live Sessions: ${allSessions.filter(s => s.status === 'in_progress').length} Active`;
+
+                // Doughnut: risk-level distribution across ALL scored sessions
+                const levelCounts = { High: 0, Medium: 0, Low: 0, Critical: 0 };
+                scored.forEach(s => {
+                    const level = riskLevelFromScore(s.suspicion_score);
+                    if (levelCounts[level] !== undefined) levelCounts[level]++;
+                });
+                renderDoughnutChart([levelCounts.High, levelCounts.Medium, levelCounts.Low, levelCounts.Critical]);
+
+                // Flagged sessions table
+                const tbody = document.getElementById('live-sessions-tbody');
+                if (flaggedSessions.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-slate-400">No flagged sessions found.</td></tr>`;
+                } else {
+                    tbody.innerHTML = flaggedSessions.map(s => {
+                        const level = riskLevelFromScore(s.suspicion_score);
+                        return `
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="py-3 px-6 font-bold text-slate-900">${s.candidate_name || 'Unknown'} <span class="text-[10px] text-slate-400 font-mono">(SES-${s.session_id})</span></td>
+                                <td class="py-3 px-6 text-slate-700">${s.exam_name || '-'}</td>
+                                <td class="py-3 px-6 font-bold text-emerald-700">${s.integrity_score ?? '--'}/100</td>
+                                <td class="py-3 px-6"><span class="px-2 py-0.5 border font-bold rounded text-[10px] ${riskBadgeClass(level)}">${level}</span></td>
+                                <td class="py-3 px-6 text-right"><a href="session-detail.html?session_id=${s.session_id}" class="px-3 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold rounded-lg text-xs transition border border-emerald-200 inline-block">Review</a></td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+
+                // Vector chart: pull each flagged session's timeline and tally which signals triggered
+                const vectorLabels = ["tab_switching", "copy_paste", "browser_manipulation", "typing_pattern", "submission_timing", "collaboration"];
+                const vectorCounts = [0, 0, 0, 0, 0, 0];
+
+                await Promise.all(flaggedSessions.map(async (s) => {
+                    const timeline = await apiRequest(`/dashboard/${s.session_id}/timeline`);
+                    const signals = timeline && timeline.score && timeline.score.signals_json;
+                    if (signals) {
+                        signals.forEach(sig => {
+                            const idx = vectorLabels.indexOf(sig.name);
+                            if (idx !== -1 && sig.score > 0) vectorCounts[idx]++;
+                        });
+                    }
+                }));
+                renderVectorChart(vectorCounts);
+
+            } catch (err) {
+                console.error("Failed to load dashboard data:", err);
+                document.getElementById('live-sessions-tbody').innerHTML =
+                    `<tr><td colspan="5" class="py-6 text-center text-slate-400">Failed to load data. Check console.</td></tr>`;
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initMentorProfile();
+            fetchLiveData();
+        });
+    </script>
+</body>
+</html>
