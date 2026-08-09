@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session Detail | Ezitech Mentor Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/api.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen">
+
+    <header class="h-16 bg-white border-b border-slate-200 px-8 flex items-center justify-between sticky top-0 z-40 shadow-sm">
+        <div class="flex items-center space-x-4">
+            <a href="dashboard.html" class="text-slate-500 hover:text-slate-900 text-sm font-semibold">← Back to Dashboard</a>
+            <h2 class="text-lg font-bold text-slate-900 tracking-tight">Session Detail</h2>
+        </div>
+        <div class="flex items-center space-x-3">
+            <button onclick="decideSession('approved')" id="approve-btn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition">Approve</button>
+            <button onclick="decideSession('rejected')" id="reject-btn" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold transition">Reject</button>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-8 space-y-6">
+
+        <div id="loading-state" class="bg-white border border-slate-200 rounded-xl p-12 text-center text-slate-400">
+            Loading session details...
+        </div>
+
+        <div id="content-area" class="space-y-6" style="display:none;">
+
+            <!-- Candidate + Session Info -->
+            <section class="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 id="candidate-name" class="text-xl font-bold text-slate-900">--</h3>
+                        <p id="candidate-email" class="text-sm text-slate-500 mt-1">--</p>
+                    </div>
+                    <span id="mentor-decision-badge" class="px-3 py-1 rounded-full text-xs font-bold border">--</span>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-6 border-t border-slate-100">
+                    <div>
+                        <p class="text-xs text-slate-500">Exam</p>
+                        <p id="exam-name" class="text-sm font-semibold text-slate-800 mt-1">--</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500">Status</p>
+                        <p id="session-status" class="text-sm font-semibold text-slate-800 mt-1 capitalize">--</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500">Start Time</p>
+                        <p id="start-time" class="text-sm font-semibold text-slate-800 mt-1">--</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500">End Time</p>
+                        <p id="end-time" class="text-sm font-semibold text-slate-800 mt-1">--</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Score Cards -->
+            <section class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm">
+                    <p class="text-xs font-medium text-slate-500">Integrity Score</p>
+                    <h3 id="integrity-score" class="text-3xl font-bold text-emerald-700 mt-1">--</h3>
+                </div>
+                <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm">
+                    <p class="text-xs font-medium text-slate-500">Suspicion Score</p>
+                    <h3 id="suspicion-score" class="text-3xl font-bold text-rose-600 mt-1">--</h3>
+                </div>
+                <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm">
+                    <p class="text-xs font-medium text-slate-500">AI Confidence</p>
+                    <h3 id="confidence-score" class="text-3xl font-bold text-slate-800 mt-1">--</h3>
+                </div>
+            </section>
+
+            <!-- Signal Breakdown -->
+            <section class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="px-6 py-4 bg-slate-50 border-b border-slate-200">
+                    <h4 class="font-bold text-sm text-slate-900">Behavioral Signal Breakdown</h4>
+                </div>
+                <div id="signals-container" class="p-6 space-y-3">
+                    <p class="text-slate-400 text-sm">No signal data available.</p>
+                </div>
+            </section>
+
+            <!-- AI Explanation -->
+            <section class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="px-6 py-4 bg-slate-50 border-b border-slate-200">
+                    <h4 class="font-bold text-sm text-slate-900">AI Explanation</h4>
+                </div>
+                <div class="p-6">
+                    <p id="explanation-text" class="text-sm text-slate-700 whitespace-pre-wrap">--</p>
+                </div>
+            </section>
+
+            <!-- Event Timeline -->
+            <section class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+                    <h4 class="font-bold text-sm text-slate-900">Event Timeline</h4>
+                    <span id="event-count" class="text-xs text-slate-400">0 events</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="border-b border-slate-200 text-[11px] font-semibold text-slate-500 uppercase tracking-wider bg-slate-50/70">
+                                <th class="py-3 px-6">Time</th>
+                                <th class="py-3 px-6">Event Type</th>
+                                <th class="py-3 px-6">Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="events-tbody" class="divide-y divide-slate-100">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </div>
+
+        <div id="error-state" class="bg-white border border-rose-200 rounded-xl p-12 text-center text-rose-500" style="display:none;">
+            Could not load this session. It may not exist, or the backend is unreachable.
+        </div>
+
+    </main>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session_id');
+
+        function riskLevelFromScore(suspicionScore) {
+            if (suspicionScore === null || suspicionScore === undefined) return "Unscored";
+            if (suspicionScore >= 75) return "Critical";
+            if (suspicionScore >= 50) return "High";
+            if (suspicionScore >= 25) return "Medium";
+            return "Low";
+        }
+
+        function decisionBadgeClass(decision) {
+            switch (decision) {
+                case "approved": return "bg-emerald-50 text-emerald-700 border-emerald-200";
+                case "rejected": return "bg-rose-50 text-rose-700 border-rose-200";
+                default: return "bg-slate-50 text-slate-600 border-slate-200";
+            }
+        }
+
+        function signalBarColor(score) {
+            if (score >= 75) return "bg-rose-500";
+            if (score >= 50) return "bg-amber-500";
+            if (score >= 25) return "bg-yellow-400";
+            return "bg-emerald-500";
+        }
+
+        async function loadSessionDetail() {
+            if (!sessionId) {
+                document.getElementById('loading-state').style.display = 'none';
+                document.getElementById('error-state').style.display = 'block';
+                return;
+            }
+
+            try {
+                const data = await apiRequest(`/dashboard/${sessionId}/timeline`);
+                if (!data || data.error) throw new Error(data && data.error ? data.error : "No data");
+
+                const candidate = data.candidate || {};
+                const session = data.session || {};
+                const score = data.score || {};
+                const events = data.events || [];
+                const explanation = data.explanation;
+
+                document.getElementById('candidate-name').innerText = candidate.name || 'Unknown Candidate';
+                document.getElementById('candidate-email').innerText = candidate.email || '-';
+                document.getElementById('exam-name').innerText = session.exam_name || '-';
+                document.getElementById('session-status').innerText = session.status || '-';
+                document.getElementById('start-time').innerText = session.start_time ? new Date(session.start_time).toLocaleString() : '-';
+                document.getElementById('end-time').innerText = session.end_time ? new Date(session.end_time).toLocaleString() : '-';
+
+                const decision = session.mentor_decision || 'pending';
+                const badge = document.getElementById('mentor-decision-badge');
+                badge.innerText = decision.charAt(0).toUpperCase() + decision.slice(1);
+                badge.className = `px-3 py-1 rounded-full text-xs font-bold border capitalize ${decisionBadgeClass(decision)}`;
+
+                document.getElementById('integrity-score').innerText = score.integrity_score !== undefined && score.integrity_score !== null ? `${score.integrity_score}/100` : '--';
+                document.getElementById('suspicion-score').innerText = score.suspicion_score !== undefined && score.suspicion_score !== null ? `${score.suspicion_score}/100` : '--';
+                document.getElementById('confidence-score').innerText = score.confidence_score !== undefined && score.confidence_score !== null ? `${score.confidence_score}/100` : '--';
+
+                // Signals
+                const signalsContainer = document.getElementById('signals-container');
+                const signals = score.signals_json;
+                if (signals && signals.length > 0) {
+                    signalsContainer.innerHTML = signals.map(sig => `
+                        <div>
+                            <div class="flex justify-between text-xs font-medium text-slate-600 mb-1">
+                                <span class="capitalize">${(sig.name || '').replace(/_/g, ' ')}</span>
+                                <span>${sig.score ?? 0}/100</span>
+                            </div>
+                            <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                                <div class="h-full ${signalBarColor(sig.score || 0)} rounded-full" style="width:${sig.score || 0}%"></div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    signalsContainer.innerHTML = `<p class="text-slate-400 text-sm">No signal data available. Score may not have been calculated yet.</p>`;
+                }
+
+                // Explanation
+                document.getElementById('explanation-text').innerText =
+                    typeof explanation === "string" ? explanation :
+                    (explanation ? JSON.stringify(explanation, null, 2) : "No explanation available.");
+
+                // Events
+                document.getElementById('event-count').innerText = `${events.length} events`;
+                const tbody = document.getElementById('events-tbody');
+                if (events.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="3" class="py-6 text-center text-slate-400">No events recorded for this session.</td></tr>`;
+                } else {
+                    tbody.innerHTML = events.map(e => `
+                        <tr class="hover:bg-slate-50">
+                            <td class="py-3 px-6 text-slate-500 whitespace-nowrap">${e.timestamp ? new Date(e.timestamp).toLocaleTimeString() : '-'}</td>
+                            <td class="py-3 px-6 font-semibold text-slate-800 capitalize">${(e.event_type || '-').replace(/_/g, ' ')}</td>
+                            <td class="py-3 px-6 text-slate-500 font-mono text-[11px]">${e.event_metadata ? JSON.stringify(e.event_metadata) : '-'}</td>
+                        </tr>
+                    `).join('');
+                }
+
+                document.getElementById('loading-state').style.display = 'none';
+                document.getElementById('content-area').style.display = 'block';
+
+            } catch (err) {
+                console.error("Failed to load session detail:", err);
+                document.getElementById('loading-state').style.display = 'none';
+                document.getElementById('error-state').style.display = 'block';
+            }
+        }
+
+        async function decideSession(decision) {
+            if (!sessionId) return;
+            const btn = decision === 'approved' ? document.getElementById('approve-btn') : document.getElementById('reject-btn');
+            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = "Saving...";
+
+            try {
+                const result = await apiRequest(`/sessions/${sessionId}/decision`, "PUT", { mentor_decision: decision });
+                if (result) {
+                    await loadSessionDetail();
+                } else {
+                    alert("Failed to update decision.");
+                }
+            } catch (err) {
+                console.error("Failed to update decision:", err);
+                alert("Something went wrong. Check console.");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', loadSessionDetail);
+    </script>
+</body>
+</html>
