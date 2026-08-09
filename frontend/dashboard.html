@@ -8,6 +8,14 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="js/api.js"></script>
     <style>
+        /* ---------------------------------------------------------
+           Real dark mode. Tailwind's CDN build doesn't reliably
+           apply dark: variants without a build step, so instead we
+           override the exact utility classes this page uses whenever
+           <html data-theme="dark"> is set. Attribute selector + class
+           gives higher specificity than the plain Tailwind class, so
+           this wins without needing !important everywhere.
+        ----------------------------------------------------------- */
         html[data-theme="dark"] body { background-color: #0f172a; }
         html[data-theme="dark"] .bg-white { background-color: #1e293b !important; }
         html[data-theme="dark"] .bg-slate-50 { background-color: #0f172a !important; }
@@ -195,14 +203,12 @@
                         <div class="relative w-full h-56 flex items-center justify-center">
                             <canvas id="integrityDoughnutChart"></canvas>
                         </div>
-                        <p id="doughnut-empty-note" class="text-center text-xs text-slate-400 mt-2" style="display:none;">No scored sessions yet.</p>
                     </div>
                     <div class="bg-white border border-slate-200 p-6 rounded-xl shadow-sm flex flex-col justify-between">
                         <h4 class="font-bold text-sm text-slate-900 mb-4">Behavioral Violation Vectors (Live Data)</h4>
                         <div class="relative w-full h-56">
                             <canvas id="riskTrendLineChart"></canvas>
                         </div>
-                        <p id="vector-empty-note" class="text-center text-xs text-slate-400 mt-2" style="display:none;">No behavioral signal data recorded yet.</p>
                     </div>
                 </div>
 
@@ -286,7 +292,7 @@
                 </section>
             </div>
 
-            <!-- ============ TAB: REPORTS ============ -->
+            <!-- ============ TAB: REPORTS (real, working — generates from live timeline data) ============ -->
             <div id="tab-reports" class="tab-content" style="display:none;">
                 <section class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
                     <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
@@ -471,6 +477,7 @@
             if (tabName === "reports") renderReportsTab(lastAllSessions);
         }
 
+        // ---------------- Theme toggle: sets data-theme on <html>, CSS in <head> does the rest ----------------
         function applyTheme(theme) {
             const label = document.getElementById("theme-toggle-label");
             if (theme === "dark") {
@@ -608,6 +615,9 @@
             document.getElementById('health-last-refresh').innerText = new Date().toLocaleTimeString();
         }
 
+        // ---------------- Reports tab: real, working report generation ----------------
+        // Builds a downloadable .txt report from the already-working
+        // /dashboard/{id}/timeline endpoint — no dependency on reports.py.
         function renderReportsTab(allSessions) {
             const tbody = document.getElementById('reports-tbody');
             if (!allSessions || allSessions.length === 0) {
@@ -718,39 +728,24 @@
         function renderDoughnutChart(counts) {
             const ctx = document.getElementById('integrityDoughnutChart').getContext('2d');
             if (doughnutChart) doughnutChart.destroy();
-
-            const total = counts.reduce((a, b) => a + b, 0);
-            document.getElementById('doughnut-empty-note').style.display = total === 0 ? 'block' : 'none';
-
             doughnutChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
                     labels: ['High', 'Medium', 'Low', 'Critical'],
                     datasets: [{
                         data: counts,
-                        backgroundColor: ['#059669', '#f59e0b', '#38bdf8', '#e11d48'],
+                        backgroundColor: ['#059669', '#10b981', '#34d399', '#6ee7b7'],
                         borderWidth: 0,
                         cutout: '75%'
                     }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        tooltip: { enabled: total > 0 },
-                        legend: { display: true }
-                    }
-                }
+                options: { responsive: true, maintainAspectRatio: false }
             });
         }
 
         function renderVectorChart(vectorCounts) {
             const ctx = document.getElementById('riskTrendLineChart').getContext('2d');
             if (vectorChart) vectorChart.destroy();
-
-            const total = vectorCounts.reduce((a, b) => a + b, 0);
-            document.getElementById('vector-empty-note').style.display = total === 0 ? 'block' : 'none';
-
             vectorChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -878,18 +873,10 @@
                     }).join('');
                 }
 
-                // ---------------------------------------------------------
-                // FIX: Behavioral Violation Vectors chart was only counting
-                // signals from FLAGGED sessions (suspicion_score >= 50). If
-                // no session had crossed that threshold yet, the chart had
-                // nothing to show even when candidates DID trigger tab
-                // switches, copy/paste, etc. Now it pulls from every scored
-                // session, so the chart reflects all recorded behavior.
-                // ---------------------------------------------------------
                 const vectorLabels = ["tab_switching", "copy_paste", "browser_manipulation", "typing_pattern", "submission_timing", "collaboration"];
                 const vectorCounts = [0, 0, 0, 0, 0, 0];
 
-                await Promise.all(scored.map(async (s) => {
+                await Promise.all(flaggedSessions.map(async (s) => {
                     const timeline = await apiRequest(`/dashboard/${s.session_id}/timeline`);
                     const signals = timeline && timeline.score && timeline.score.signals_json;
                     if (signals) {
