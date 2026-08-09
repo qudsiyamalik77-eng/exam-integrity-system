@@ -212,6 +212,7 @@
                         <h4 class="font-bold text-sm text-slate-900">Live Flagged Exam Sessions</h4>
                         <button onclick="fetchLiveData()" class="text-xs text-emerald-700 font-semibold hover:underline">Refresh Table</button>
                     </div>
+                    <p class="px-6 pt-3 text-xs text-slate-400">Only sessions with a suspicion score of 50 or higher appear here.</p>
                     <div class="overflow-x-auto flex-grow">
                         <table class="w-full text-left border-collapse">
                             <thead>
@@ -259,15 +260,29 @@
                 </section>
             </div>
 
-            <!-- ============ TAB: REPORTS (placeholder) ============ -->
+            <!-- ============ TAB: REPORTS (placeholder — needs backend reports.py connected) ============ -->
             <div id="tab-reports" class="tab-content" style="display:none;">
                 <section class="bg-white border border-slate-200 rounded-xl shadow-sm p-8 text-center">
-                    <p class="text-slate-500 text-sm">Report generation is not connected yet — this needs the backend reports endpoint hooked up.</p>
+                    <p class="text-slate-500 text-sm">Report generation is not connected yet.</p>
+                    <p class="text-slate-400 text-xs mt-2">This requires the backend's <code class="bg-slate-100 px-1.5 py-0.5 rounded">reports.py</code> endpoint to be wired up here.</p>
                 </section>
             </div>
 
-            <!-- ============ TAB: SETTINGS ============ -->
-            <div id="tab-settings" class="tab-content" style="display:none;">
+            <!-- ============ TAB: SETTINGS (exam config + real theme toggle) ============ -->
+            <div id="tab-settings" class="tab-content space-y-6" style="display:none;">
+                <section class="bg-white border border-slate-200 rounded-xl shadow-sm p-6 max-w-2xl">
+                    <h4 class="font-bold text-sm text-slate-900 mb-4">Appearance</h4>
+                    <div class="flex items-center justify-between py-2">
+                        <div>
+                            <p class="text-sm font-medium text-slate-800">Dark Mode</p>
+                            <p class="text-xs text-slate-500">Switch the dashboard between light and dark theme.</p>
+                        </div>
+                        <button id="theme-toggle-btn" onclick="toggleTheme()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-semibold text-slate-700 transition">
+                            <span id="theme-toggle-label">🌙 Enable Dark Mode</span>
+                        </button>
+                    </div>
+                </section>
+
                 <section class="bg-white border border-slate-200 rounded-xl shadow-sm p-6 max-w-2xl">
                     <h4 class="font-bold text-sm text-slate-900 mb-4">Configured Exams</h4>
                     <div class="overflow-x-auto">
@@ -286,10 +301,42 @@
                 </section>
             </div>
 
-            <!-- ============ TAB: SYSTEM HEALTH (placeholder) ============ -->
+            <!-- ============ TAB: SYSTEM HEALTH (real data, computed from sessions) ============ -->
             <div id="tab-health" class="tab-content" style="display:none;">
-                <section class="bg-white border border-slate-200 rounded-xl shadow-sm p-8 text-center">
-                    <p class="text-slate-500 text-sm">System health monitoring is not connected to a backend endpoint yet.</p>
+                <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+                    <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm">
+                        <p class="text-xs font-medium text-slate-500">Sessions In Progress</p>
+                        <h3 id="health-in-progress" class="text-2xl font-bold text-slate-900 mt-1">--</h3>
+                    </div>
+                    <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm">
+                        <p class="text-xs font-medium text-slate-500">Sessions Submitted</p>
+                        <h3 id="health-submitted" class="text-2xl font-bold text-slate-900 mt-1">--</h3>
+                    </div>
+                    <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm">
+                        <p class="text-xs font-medium text-slate-500">Avg AI Confidence</p>
+                        <h3 id="health-confidence" class="text-2xl font-bold text-slate-900 mt-1">-- <span class="text-xs text-slate-400">/100</span></h3>
+                    </div>
+                    <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm">
+                        <p class="text-xs font-medium text-slate-500">Pending Mentor Review</p>
+                        <h3 id="health-pending" class="text-2xl font-bold text-slate-900 mt-1">--</h3>
+                    </div>
+                </section>
+                <section class="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
+                    <h4 class="font-bold text-sm text-slate-900 mb-3">Backend Connection</h4>
+                    <div class="space-y-2 text-xs text-slate-600">
+                        <div class="flex justify-between py-2 border-b border-slate-100">
+                            <span>API Endpoint</span>
+                            <span id="health-api-url" class="font-mono text-slate-500"></span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b border-slate-100">
+                            <span>Last Refreshed</span>
+                            <span id="health-last-refresh" class="font-medium text-slate-700">--</span>
+                        </div>
+                        <div class="flex justify-between py-2">
+                            <span>Connection Status</span>
+                            <span id="health-status" class="font-semibold text-emerald-600">Checking...</span>
+                        </div>
+                    </div>
                 </section>
             </div>
 
@@ -341,6 +388,7 @@
     <script>
         let doughnutChart = null;
         let vectorChart = null;
+        let lastAllSessions = [];
         const FLAGGED_THRESHOLD = 50;
 
         const tabTitles = {
@@ -369,15 +417,36 @@
 
             document.getElementById("page-title").innerText = tabTitles[tabName] || tabName;
 
-            // Scroll both the page and the scrollable main content area back to top,
-            // so clicking a lower sidebar link is always visible immediately.
             window.scrollTo(0, 0);
             const mainArea = document.getElementById("main-content-area");
             if (mainArea) mainArea.scrollTop = 0;
 
             if (tabName === "settings") loadExamSettings();
+            if (tabName === "health") updateHealthTab(lastAllSessions);
         }
 
+        // ---------------- Theme toggle (real, persists via localStorage) ----------------
+        function applyTheme(theme) {
+            const label = document.getElementById("theme-toggle-label");
+            if (theme === "dark") {
+                document.body.classList.add("bg-slate-900", "text-slate-100");
+                document.body.classList.remove("bg-white", "text-slate-800");
+                if (label) label.innerText = "☀️ Disable Dark Mode";
+            } else {
+                document.body.classList.remove("bg-slate-900", "text-slate-100");
+                document.body.classList.add("bg-white", "text-slate-800");
+                if (label) label.innerText = "🌙 Enable Dark Mode";
+            }
+        }
+
+        function toggleTheme() {
+            const current = localStorage.getItem("ezitech_dashboard_theme") || "light";
+            const next = current === "dark" ? "light" : "dark";
+            localStorage.setItem("ezitech_dashboard_theme", next);
+            applyTheme(next);
+        }
+
+        // ---------------- Mentor name (no real login backend exists yet) ----------------
         function initMentorProfile() {
             let mentorName = sessionStorage.getItem('ezitech_mentor_name');
             if (!mentorName) {
@@ -478,6 +547,26 @@
             `).join('');
         }
 
+        // ---------------- System Health tab (computed from real session data) ----------------
+        function updateHealthTab(allSessions) {
+            const inProgress = allSessions.filter(s => s.status === 'in_progress').length;
+            const submitted = allSessions.filter(s => s.status === 'submitted').length;
+            const pending = allSessions.filter(s => !s.mentor_decision || s.mentor_decision === 'pending').length;
+
+            const scored = allSessions.filter(s => s.confidence_score !== null && s.confidence_score !== undefined);
+            const avgConfidence = scored.length
+                ? (scored.reduce((sum, s) => sum + s.confidence_score, 0) / scored.length).toFixed(1)
+                : "--";
+
+            document.getElementById('health-in-progress').innerText = inProgress;
+            document.getElementById('health-submitted').innerText = submitted;
+            document.getElementById('health-confidence').innerHTML = `${avgConfidence} <span class="text-xs text-slate-400">/100</span>`;
+            document.getElementById('health-pending').innerText = pending;
+
+            document.getElementById('health-api-url').innerText = API_BASE_URL;
+            document.getElementById('health-last-refresh').innerText = new Date().toLocaleTimeString();
+        }
+
         Chart.defaults.color = '#64748b';
         Chart.defaults.borderColor = '#e2e8f0';
 
@@ -562,6 +651,7 @@
             try {
                 const allSessions = (await apiRequest("/dashboard/sessions")) || [];
                 const flaggedSessions = (await apiRequest("/dashboard/flagged")) || [];
+                lastAllSessions = allSessions;
 
                 const uniqueCandidates = new Set(allSessions.map(s => s.candidate_email || s.candidate_id));
                 const scored = allSessions.filter(s => s.integrity_score !== null && s.integrity_score !== undefined);
@@ -643,12 +733,25 @@
                 }));
                 renderVectorChart(vectorCounts);
 
+                document.getElementById('health-status').innerText = "Connected";
+                document.getElementById('health-status').className = "font-semibold text-emerald-600";
+                if (document.getElementById('tab-health').style.display !== 'none') {
+                    updateHealthTab(allSessions);
+                }
+
             } catch (err) {
                 console.error("Failed to load dashboard data:", err);
+                const statusEl = document.getElementById('health-status');
+                if (statusEl) {
+                    statusEl.innerText = "Connection Failed";
+                    statusEl.className = "font-semibold text-rose-600";
+                }
             }
         }
 
         window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem("ezitech_dashboard_theme") || "light";
+            applyTheme(savedTheme);
             initMentorProfile();
             showTab('overview');
             fetchLiveData();
