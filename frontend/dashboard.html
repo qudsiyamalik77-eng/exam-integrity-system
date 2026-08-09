@@ -7,6 +7,38 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="js/api.js"></script>
+    <style>
+        /* ---------------------------------------------------------
+           Real dark mode. Tailwind's CDN build doesn't reliably
+           apply dark: variants without a build step, so instead we
+           override the exact utility classes this page uses whenever
+           <html data-theme="dark"> is set. Attribute selector + class
+           gives higher specificity than the plain Tailwind class, so
+           this wins without needing !important everywhere.
+        ----------------------------------------------------------- */
+        html[data-theme="dark"] body { background-color: #0f172a; }
+        html[data-theme="dark"] .bg-white { background-color: #1e293b !important; }
+        html[data-theme="dark"] .bg-slate-50 { background-color: #0f172a !important; }
+        html[data-theme="dark"] .bg-slate-50\/70 { background-color: rgba(30,41,59,0.7) !important; }
+        html[data-theme="dark"] .bg-slate-100 { background-color: #334155 !important; }
+        html[data-theme="dark"] .bg-slate-200 { background-color: #334155 !important; }
+        html[data-theme="dark"] .hover\:bg-slate-50:hover { background-color: #273449 !important; }
+        html[data-theme="dark"] .hover\:bg-slate-100:hover { background-color: #334155 !important; }
+        html[data-theme="dark"] .hover\:bg-slate-200:hover { background-color: #475569 !important; }
+        html[data-theme="dark"] .border-slate-200 { border-color: #334155 !important; }
+        html[data-theme="dark"] .border-slate-100 { border-color: #273449 !important; }
+        html[data-theme="dark"] .divide-slate-100 > * + * { border-color: #273449 !important; }
+        html[data-theme="dark"] .text-slate-900 { color: #f1f5f9 !important; }
+        html[data-theme="dark"] .text-slate-800 { color: #e2e8f0 !important; }
+        html[data-theme="dark"] .text-slate-700 { color: #cbd5e1 !important; }
+        html[data-theme="dark"] .text-slate-600 { color: #94a3b8 !important; }
+        html[data-theme="dark"] .text-slate-500 { color: #64748b !important; }
+        html[data-theme="dark"] .text-slate-400 { color: #64748b !important; }
+        html[data-theme="dark"] .bg-emerald-50 { background-color: rgba(16,185,129,0.15) !important; }
+        html[data-theme="dark"] .bg-emerald-100 { background-color: rgba(16,185,129,0.2) !important; }
+        html[data-theme="dark"] .bg-rose-50 { background-color: rgba(244,63,94,0.15) !important; }
+        html[data-theme="dark"] .bg-amber-50 { background-color: rgba(245,158,11,0.15) !important; }
+    </style>
 </head>
 <body class="bg-white text-slate-800 font-sans antialiased min-h-screen flex">
 
@@ -232,7 +264,7 @@
                 </section>
             </div>
 
-            <!-- ============ TAB: CANDIDATES (shows every candidate, with names) ============ -->
+            <!-- ============ TAB: CANDIDATES ============ -->
             <div id="tab-candidates" class="tab-content" style="display:none;">
                 <section class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
                     <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
@@ -260,15 +292,34 @@
                 </section>
             </div>
 
-            <!-- ============ TAB: REPORTS (placeholder — needs backend reports.py connected) ============ -->
+            <!-- ============ TAB: REPORTS (real, working — generates from live timeline data) ============ -->
             <div id="tab-reports" class="tab-content" style="display:none;">
-                <section class="bg-white border border-slate-200 rounded-xl shadow-sm p-8 text-center">
-                    <p class="text-slate-500 text-sm">Report generation is not connected yet.</p>
-                    <p class="text-slate-400 text-xs mt-2">This requires the backend's <code class="bg-slate-100 px-1.5 py-0.5 rounded">reports.py</code> endpoint to be wired up here.</p>
+                <section class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
+                    <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+                        <h4 class="font-bold text-sm text-slate-900">Generate Integrity Report</h4>
+                        <button onclick="fetchLiveData()" class="text-xs text-emerald-700 font-semibold hover:underline">Refresh</button>
+                    </div>
+                    <p class="px-6 pt-3 text-xs text-slate-400">Downloads a full behavioral integrity report (score breakdown + event timeline) for any candidate session as a text file.</p>
+                    <div class="overflow-x-auto flex-grow">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-200 text-[11px] font-semibold text-slate-500 uppercase tracking-wider bg-slate-50/70">
+                                    <th class="py-3 px-6">Candidate</th>
+                                    <th class="py-3 px-6">Exam</th>
+                                    <th class="py-3 px-6">Integrity Score</th>
+                                    <th class="py-3 px-6">Risk Level</th>
+                                    <th class="py-3 px-6 text-right">Report</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reports-tbody" class="divide-y divide-slate-100 text-xs">
+                                <tr><td colspan="5" class="py-6 text-center text-slate-400">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </section>
             </div>
 
-            <!-- ============ TAB: SETTINGS (exam config + real theme toggle) ============ -->
+            <!-- ============ TAB: SETTINGS ============ -->
             <div id="tab-settings" class="tab-content space-y-6" style="display:none;">
                 <section class="bg-white border border-slate-200 rounded-xl shadow-sm p-6 max-w-2xl">
                     <h4 class="font-bold text-sm text-slate-900 mb-4">Appearance</h4>
@@ -301,7 +352,7 @@
                 </section>
             </div>
 
-            <!-- ============ TAB: SYSTEM HEALTH (real data, computed from sessions) ============ -->
+            <!-- ============ TAB: SYSTEM HEALTH ============ -->
             <div id="tab-health" class="tab-content" style="display:none;">
                 <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
                     <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm">
@@ -423,18 +474,17 @@
 
             if (tabName === "settings") loadExamSettings();
             if (tabName === "health") updateHealthTab(lastAllSessions);
+            if (tabName === "reports") renderReportsTab(lastAllSessions);
         }
 
-        // ---------------- Theme toggle (real, persists via localStorage) ----------------
+        // ---------------- Theme toggle: sets data-theme on <html>, CSS in <head> does the rest ----------------
         function applyTheme(theme) {
             const label = document.getElementById("theme-toggle-label");
             if (theme === "dark") {
-                document.body.classList.add("bg-slate-900", "text-slate-100");
-                document.body.classList.remove("bg-white", "text-slate-800");
+                document.documentElement.setAttribute("data-theme", "dark");
                 if (label) label.innerText = "☀️ Disable Dark Mode";
             } else {
-                document.body.classList.remove("bg-slate-900", "text-slate-100");
-                document.body.classList.add("bg-white", "text-slate-800");
+                document.documentElement.removeAttribute("data-theme");
                 if (label) label.innerText = "🌙 Enable Dark Mode";
             }
         }
@@ -446,7 +496,6 @@
             applyTheme(next);
         }
 
-        // ---------------- Mentor name (no real login backend exists yet) ----------------
         function initMentorProfile() {
             let mentorName = sessionStorage.getItem('ezitech_mentor_name');
             if (!mentorName) {
@@ -547,7 +596,6 @@
             `).join('');
         }
 
-        // ---------------- System Health tab (computed from real session data) ----------------
         function updateHealthTab(allSessions) {
             const inProgress = allSessions.filter(s => s.status === 'in_progress').length;
             const submitted = allSessions.filter(s => s.status === 'submitted').length;
@@ -565,6 +613,113 @@
 
             document.getElementById('health-api-url').innerText = API_BASE_URL;
             document.getElementById('health-last-refresh').innerText = new Date().toLocaleTimeString();
+        }
+
+        // ---------------- Reports tab: real, working report generation ----------------
+        // Builds a downloadable .txt report from the already-working
+        // /dashboard/{id}/timeline endpoint — no dependency on reports.py.
+        function renderReportsTab(allSessions) {
+            const tbody = document.getElementById('reports-tbody');
+            if (!allSessions || allSessions.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-slate-400">No sessions available yet.</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = allSessions.map(s => {
+                const level = riskLevelFromScore(s.suspicion_score);
+                return `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="py-3 px-6 font-bold text-slate-900">${s.candidate_name || 'Unknown'} <span class="text-[10px] text-slate-400 font-mono">(SES-${s.session_id})</span></td>
+                        <td class="py-3 px-6 text-slate-700">${s.exam_name || '-'}</td>
+                        <td class="py-3 px-6 font-bold text-emerald-700">${s.integrity_score ?? '--'}/100</td>
+                        <td class="py-3 px-6"><span class="px-2 py-0.5 border font-bold rounded text-[10px] ${riskBadgeClass(level)}">${level}</span></td>
+                        <td class="py-3 px-6 text-right">
+                            <button onclick="generateReport(${s.session_id})" id="report-btn-${s.session_id}" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg text-xs transition">
+                                Download Report
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function generateReport(sessionId) {
+            const btn = document.getElementById(`report-btn-${sessionId}`);
+            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = "Generating...";
+
+            try {
+                const data = await apiRequest(`/dashboard/${sessionId}/timeline`);
+                if (!data) throw new Error("No data returned");
+
+                const candidate = data.candidate || {};
+                const session = data.session || {};
+                const score = data.score || {};
+                const events = data.events || [];
+                const explanation = data.explanation || "No explanation available.";
+
+                const lines = [];
+                lines.push("=".repeat(60));
+                lines.push("EZITECH — AI EXAM INTEGRITY REPORT");
+                lines.push("=".repeat(60));
+                lines.push("");
+                lines.push(`Generated: ${new Date().toLocaleString()}`);
+                lines.push(`Session ID: SES-${session.id ?? sessionId}`);
+                lines.push("");
+                lines.push("-- CANDIDATE --");
+                lines.push(`Name: ${candidate.name || 'Unknown'}`);
+                lines.push(`Email: ${candidate.email || 'Unknown'}`);
+                lines.push("");
+                lines.push("-- EXAM --");
+                lines.push(`Exam: ${session.exam_name || '-'}`);
+                lines.push(`Status: ${session.status || '-'}`);
+                lines.push(`Start Time: ${session.start_time || '-'}`);
+                lines.push(`End Time: ${session.end_time || '-'}`);
+                lines.push(`Mentor Decision: ${session.mentor_decision || 'pending'}`);
+                lines.push("");
+                lines.push("-- INTEGRITY SCORES --");
+                lines.push(`Integrity Score: ${score.integrity_score ?? '--'} / 100`);
+                lines.push(`Suspicion Score: ${score.suspicion_score ?? '--'} / 100`);
+                lines.push(`Confidence Score: ${score.confidence_score ?? '--'} / 100`);
+                lines.push(`Risk Level: ${riskLevelFromScore(score.suspicion_score)}`);
+                lines.push("");
+                lines.push("-- AI EXPLANATION --");
+                lines.push(typeof explanation === "string" ? explanation : JSON.stringify(explanation, null, 2));
+                lines.push("");
+                lines.push(`-- EVENT TIMELINE (${events.length} events) --`);
+                if (events.length === 0) {
+                    lines.push("No events recorded.");
+                } else {
+                    events.forEach((e, i) => {
+                        lines.push(`${i + 1}. [${e.timestamp || '-'}] ${e.event_type}`);
+                        if (e.event_metadata) {
+                            lines.push(`   ${JSON.stringify(e.event_metadata)}`);
+                        }
+                    });
+                }
+                lines.push("");
+                lines.push("=".repeat(60));
+                lines.push("End of Report");
+                lines.push("=".repeat(60));
+
+                const reportText = lines.join("\n");
+                const blob = new Blob([reportText], { type: "text/plain" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `integrity-report-SES-${session.id ?? sessionId}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+            } catch (err) {
+                console.error("Failed to generate report:", err);
+                alert("Could not generate the report. Check console for details.");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
         }
 
         Chart.defaults.color = '#64748b';
@@ -737,6 +892,9 @@
                 document.getElementById('health-status').className = "font-semibold text-emerald-600";
                 if (document.getElementById('tab-health').style.display !== 'none') {
                     updateHealthTab(allSessions);
+                }
+                if (document.getElementById('tab-reports').style.display !== 'none') {
+                    renderReportsTab(allSessions);
                 }
 
             } catch (err) {
